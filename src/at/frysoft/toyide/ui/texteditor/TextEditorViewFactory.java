@@ -19,15 +19,21 @@ public class TextEditorViewFactory implements ViewFactory {
 
         switch(name) {
 
-            case AbstractDocument.ContentElementName: return new JaggedLabelView(elem);
+            case AbstractDocument.ContentElementName: {
+                AttributeSet attributes = elem.getAttributes();
+
+                if(attributes.containsAttribute("ERROR", true))
+                    return new JaggedLabelView(elem);
+
+                return new LabelView(elem);
+            }
+
             case AbstractDocument.ParagraphElementName: return new ParagraphView(elem);
             case AbstractDocument.SectionElementName: return new BoxView(elem, View.Y_AXIS);
             case StyleConstants.ComponentElementName: return new ComponentView(elem);
             case StyleConstants.IconElementName: return new IconView(elem);
 
         }
-
-        System.out.println(name);
 
         return null;
     }

@@ -1,28 +1,34 @@
-package at.frysoft.toyide.toy;
+package at.frysoft.toyide.toy1;
 
 import at.frysoft.toyide.Log;
 import at.frysoft.toyide.Strings;
 
 import java.io.*;
 
-public class Toy {
+public abstract class CPU {
 
-    private PC pc;
-    private Memory memory;
-    private Memory register;
+    protected PC pc;
+    protected Memory memory;
+    protected Memory register;
 
     private Instruction currentInstruction;
 
-    public Toy() {
+    private int executedInstructions;
+
+    public CPU() {
         memory = new Memory(256);
         register = new Memory(16);
         pc = new PC(0x10);
+        reset();
     }
+
+    protected abstract void execute(Instruction instr);
 
     public void reset() {
         memory.reset();
         register.reset();
         pc.reset();
+        executedInstructions = 0;
     }
 
     public void load(String fileName) {
@@ -31,7 +37,7 @@ public class Toy {
 
     public boolean load(File file) {
         reset();
-/*
+
         if(!file.exists() || file.isDirectory()) {
             Log.err.println(Strings.FILE_NOT_EXIST_OR_DIR);
             return false;
@@ -65,20 +71,26 @@ public class Toy {
         } catch (IOException e) {
             e.printStackTrace();
         }
-*/
+
         return false;
     }
 
     public boolean step() {
-        currentInstruction = Instruction.getInstruction(pc, memory);
+        currentInstruction.set(memory.read(pc.get()));
+        pc.increment();
 
-        if(currentInstruction == null) {
-            Log.err.println("...mmmh... something went wrong here...");
-            return false;
-        }
+        execute(currentInstruction);
+        ++executedInstructions;
 
-        currentInstruction.execute(pc, register, memory);
-        return !currentInstruction.isHalt();
+        return (currentInstruction.getOPC() != Instruction.HLT);
+    }
+
+    public void run() {
+        while(step());
+    }
+
+    public int getExecutedInstructions() {
+        return executedInstructions;
     }
 
     private void printMemoryLine(Memory mem, int start, int end) {
@@ -89,11 +101,10 @@ public class Toy {
     }
 
     public void print(int memCount) {
-        /*
         Log.out.println("*****************************************************************************************");
         Log.out.print("PC: " + String.format("%02x", pc.getPrev()) + " => ");
         Log.out.println("TupleInstruction: " + currentInstruction.getName() + " = "
-                           + String.format("%04x", currentInstruction.get()));
+                                + String.format("%04x", currentInstruction.get()));
 
         Log.out.println("-----------------------------------------------------------------------------------------");
         Log.out.println("Register:");
@@ -105,7 +116,6 @@ public class Toy {
             printMemoryLine(memory, i, i + 16);
 
         Log.out.println("*****************************************************************************************");
-        */
     }
 
     public void print() {

@@ -1,18 +1,14 @@
 package at.frysoft.toyide.ui.texteditor;
 
-import javax.swing.text.BadLocationException;
-import javax.swing.text.DefaultStyledDocument;
-import javax.swing.text.Style;
+import javax.swing.text.*;
+import java.awt.*;
 
 /**
  * Created by Stefan on 20.05.2018.
  */
 public class Highlighter {
 
-    private KeywordGroup[] keywordGroups;
-
-    private Style numberStyle;
-    private Style commentStyle;
+    private HighlightSettings settings;
 
     private TextEditorDocument document;
 
@@ -20,24 +16,7 @@ public class Highlighter {
 
     public Highlighter(TextEditorDocument document) {
         this.document = document;
-        keywordGroups = new KeywordGroup[0];
-        numberStyle = null;
         offset = 0;
-    }
-
-    public void setNumberStyle(Style numberStyle) {
-        this.numberStyle = numberStyle;
-    }
-
-    public void setCommentStyle(Style commentStyle) {
-        this.commentStyle = commentStyle;
-    }
-
-    public void addKeywordGroup(KeywordGroup keywordGroup) {
-        KeywordGroup[] kwgs = new KeywordGroup[keywordGroups.length + 1];
-        System.arraycopy(keywordGroups, 0, kwgs, 0, keywordGroups.length);
-        kwgs[keywordGroups.length] = keywordGroup;
-        keywordGroups = kwgs;
     }
 
     private boolean isSeparate(int offset, int length, String str) {
@@ -50,14 +29,12 @@ public class Highlighter {
         return (
                 (
                  start < 33 ||
-                 start == ' ' ||
                  start == '(' ||
                  start == ')' ||
                  start == ',' ||
                  start == ';'
                 ) && (
                  end < 33 ||
-                 end == ' ' ||
                  end == '(' ||
                  end == ')' ||
                  end == ',' ||
@@ -66,20 +43,22 @@ public class Highlighter {
         );
     }
 
-    private void highlight(int offset, int length, Style style) {
-        document.setCharacterAttributes(this.offset + offset, length, style, false);
+    private void highlight(int offset, int length, int styleIndex) {
+        document.setCharacterAttributes(this.offset + offset, length,
+                                        settings.getStyle(styleIndex), false);
+/*
+        if(style == commentStyle)
+            document.setCharacterAttributes(this.offset + offset, length, errorStyle, false);
+            */
     }
 
     private void highlightComment(int offset) {
-        if(commentStyle == null)
-            return;
-
         int index = document.indexOf('\n', offset);
         if(index == -1)
             index = document.getLength();
 
         int length = index - offset;
-        highlight(offset, length, commentStyle);
+        highlight(offset, length, HighlightSettings.DEFAULT_STYLE_COMMENT);
     }
 
     private void highlightKeyword(String str, String keyword, Style style) {
@@ -93,9 +72,6 @@ public class Highlighter {
     }
 
     private void highlightNumbers(String str) {
-        if(numberStyle == null)
-            return;
-
         str = str.toUpperCase();
 
         char c;
@@ -127,7 +103,7 @@ public class Highlighter {
 
             if(numberLength != 0) {
                 if(isSeparate(numberStart, numberLength, str))
-                    highlight(numberStart, numberLength, numberStyle);
+                    highlight(numberStart, numberLength, HighlightSettings.DEFAULT_STYLE_NUMBER);
                 numberLength = 0;
                 hexadecimal = false;
             }

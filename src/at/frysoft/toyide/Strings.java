@@ -22,6 +22,11 @@ public class Strings {
     public static final String INSTRUCTION_JR  = "JR";
     public static final String INSTRUCTION_JL  = "JL";
 
+    public static final String INSTRUCTION_PUSH = "PUSH";
+    public static final String INSTRUCTION_POP  = "POP";
+    public static final String INSTRUCTION_CALL = "CALL";
+    public static final String INSTRUCTION_RET  = "RET";
+
     public static final String COMPILER_INSTRUCTION_ORG = "ORG";
     public static final String COMPILER_INSTRUCTION_DW  = "DW";
     public static final String COMPILER_INSTRUCTION_DUP = "DUP";
