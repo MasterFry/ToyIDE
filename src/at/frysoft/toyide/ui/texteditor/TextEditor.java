@@ -4,10 +4,12 @@ import at.frysoft.toyide.Log;
 import at.frysoft.toyide.Strings;
 
 import javax.swing.*;
-import javax.swing.text.*;
+import javax.swing.text.BadLocationException;
 import java.awt.*;
 import java.awt.event.InputEvent;
-import java.io.*;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 
 /**
  * Created by Stefan on 20.05.2018.

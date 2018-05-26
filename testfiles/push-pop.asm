@@ -1,0 +1,12 @@
+; push and pop test
+LDA R1 0x03
+PUSH R1
+LDA R1 0x04
+PUSH R1
+
+POP R1
+ST R1 0x00
+POP R1
+ST R1 0x01
+
+HLT

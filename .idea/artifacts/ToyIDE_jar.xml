@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="ToyIDE:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/ToyIDE_jar</output-path>
+    <root id="archive" name="ToyIDE.jar">
+      <element id="module-output" name="ToyIDE" />
+    </root>
+  </artifact>
+</component>

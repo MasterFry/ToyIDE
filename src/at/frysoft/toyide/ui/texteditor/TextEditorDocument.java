@@ -1,12 +1,14 @@
 package at.frysoft.toyide.ui.texteditor;
 
-import at.frysoft.toyide.Log;
 import at.frysoft.toyide.ProjectSettings;
 
 import javax.swing.*;
 import javax.swing.event.CaretEvent;
 import javax.swing.event.CaretListener;
-import javax.swing.text.*;
+import javax.swing.text.AttributeSet;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.DefaultStyledDocument;
+import javax.swing.text.StyleContext;
 import java.awt.event.ActionEvent;
 import java.beans.PropertyChangeListener;
 import java.io.*;

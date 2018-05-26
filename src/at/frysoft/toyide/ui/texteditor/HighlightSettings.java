@@ -6,9 +6,6 @@ import javax.swing.text.Style;
 import javax.swing.text.StyleConstants;
 import javax.swing.text.StyleContext;
 import java.awt.*;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
 import java.util.Vector;
 
 public class HighlightSettings {

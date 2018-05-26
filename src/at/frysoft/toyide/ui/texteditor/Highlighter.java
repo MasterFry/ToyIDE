@@ -1,11 +1,8 @@
 package at.frysoft.toyide.ui.texteditor;
 
-import javafx.util.Pair;
-
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Element;
 import javax.swing.text.Style;
-import java.util.Vector;
 
 /**
  * Highlighter.java
