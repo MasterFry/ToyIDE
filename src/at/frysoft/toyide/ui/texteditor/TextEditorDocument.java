@@ -1,17 +1,33 @@
 package at.frysoft.toyide.ui.texteditor;
 
+import at.frysoft.toyide.Log;
+import at.frysoft.toyide.ProjectSettings;
+
+import javax.swing.*;
+import javax.swing.event.CaretEvent;
+import javax.swing.event.CaretListener;
 import javax.swing.text.*;
+import java.awt.event.ActionEvent;
+import java.beans.PropertyChangeListener;
+import java.io.*;
 
 /**
  * Created by Stefan on 20.05.2018.
  */
-public class TextEditorDocument extends DefaultStyledDocument {
+public class TextEditorDocument extends DefaultStyledDocument implements CaretListener {
 
     private Highlighter highlighter;
+
+    private int caretPosition;
+
+    public final ReverseTabAction reverseTabAction;
 
     public TextEditorDocument(StyleContext styleContext) {
         super(styleContext);
         highlighter = null;
+        caretPosition = 0;
+
+        reverseTabAction = new ReverseTabAction();
     }
 
     public void setHighlighter(Highlighter highlighter) {
@@ -20,7 +36,9 @@ public class TextEditorDocument extends DefaultStyledDocument {
 
     @Override
     public void insertString(int offset, String str, AttributeSet a) throws BadLocationException {
-        super.insertString(offset, str, a);
+        str = str.replace("\t", ProjectSettings.indent);
+
+        super.insertString(offset, str, highlighter.getDefaultStyle());
 
         if(highlighter != null)
             highlighter.checkForHighlight(offset, str.length());
@@ -31,30 +49,81 @@ public class TextEditorDocument extends DefaultStyledDocument {
         super.remove(offset, length);
     }
 
-    public int indexOf(char c, int offset) {
-        int remainingLength = getLength() - offset;
-        int length = 128;
-        int index;
+    @Override
+    public void caretUpdate(CaretEvent e) {
+        caretPosition = e.getDot();
+    }
 
+    public void cleanDocument() {
         try {
-            while(remainingLength != 0) {
-                if (length > remainingLength)
-                    length = remainingLength;
+            remove(0, getLength());
+        } catch (BadLocationException ex) {
+            ex.printStackTrace();
+        }
+    }
 
-                remainingLength -= length;
+    public void readFile(File file) throws IOException, BadLocationException {
+        remove(0, getLength());
 
-                String str = null;
-                    str = getText(offset, length);
-                index = str.indexOf(c);
+        BufferedReader br = new BufferedReader(new FileReader(file));
+        String line;
 
-                if (index != -1)
-                    return (offset + index);
-            }
-        } catch (BadLocationException e) {
-            e.printStackTrace();
+        while((line = br.readLine()) != null) {
+            insertString(getLength(), line + "\n", highlighter.getDefaultStyle());
         }
 
-        return -1;
+        br.close();
+    }
+
+    public void writeFile(File file) throws IOException, BadLocationException {
+        FileWriter fw = new FileWriter(file);
+
+        fw.write(getText(0, getLength()));
+
+        fw.close();
+    }
+
+    public void reverseTab() {
+        try {
+            remove(caretPosition - 4, 4);
+        } catch (BadLocationException ex) {
+            ex.printStackTrace();
+        }
+    }
+
+    public class ReverseTabAction implements Action {
+
+        @Override
+        public Object getValue(String key) {
+            return this;
+        }
+
+        @Override
+        public void putValue(String key, Object value) {
+        }
+
+        @Override
+        public void setEnabled(boolean b) {
+        }
+
+        @Override
+        public boolean isEnabled() {
+            return true;
+        }
+
+        @Override
+        public void addPropertyChangeListener(PropertyChangeListener listener) {
+        }
+
+        @Override
+        public void removePropertyChangeListener(PropertyChangeListener listener) {
+        }
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            //reverseTab();
+        }
+
     }
 
 }

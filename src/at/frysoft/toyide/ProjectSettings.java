@@ -15,4 +15,6 @@ public class ProjectSettings {
 
     public File workspace = null;
 
+    public static final String indent = "    ";
+
 }

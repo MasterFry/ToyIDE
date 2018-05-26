@@ -28,7 +28,7 @@ public class TextEditorKit extends StyledEditorKit {
         StyleContext styleContext = new StyleContext();
         document = new TextEditorDocument(styleContext);
 
-        highlighter = new Highlighter(document);
+        highlighter = new Highlighter(document, HighlightSettings.createDefault(styleContext));
         document.setHighlighter(highlighter);
 
         return document;

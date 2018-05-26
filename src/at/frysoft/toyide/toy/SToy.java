@@ -1,4 +1,4 @@
-package at.frysoft.toyide.toy1;
+package at.frysoft.toyide.toy;
 
 public class SToy extends Toy {
 

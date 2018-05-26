@@ -2,12 +2,11 @@ package at.frysoft.toyide.ui.texteditor;
 
 import at.frysoft.toyide.Log;
 import at.frysoft.toyide.Strings;
-import at.frysoft.toyide.compiler.tuple.CompilerInstruction;
-import at.frysoft.toyide.toy.Instruction;
 
 import javax.swing.*;
 import javax.swing.text.*;
 import java.awt.*;
+import java.awt.event.InputEvent;
 import java.io.*;
 
 /**
@@ -20,28 +19,31 @@ public class TextEditor extends JComponent {
     private JLabel lineNumbers;
 
     private JTextPane textPane;
-    //private TextEditorDocument document;
+
+    private TextEditorDocument document;
 
     public TextEditor() {
         setLayout(new BorderLayout());
 
-        StyleContext styleContext = new StyleContext();
-        //document = new TextEditorDocument(styleContext);
-        //highlighter = new Highlighter(document);
-        //document.setHighlighter(highlighter);
-
         StringBuilder sb = new StringBuilder();
         sb.append("<html>");
-        for(int i = 1; i <= 20; ++i)
-            sb.append(" " + i + " <br>");
+        for(int i = 1; i <= 20; ++i) {
+            sb.append(" ");
+            sb.append(i);
+            sb.append(" <br>");
+        }
         sb.append("</html>");
 
         lineNumbers = new JLabel(sb.toString(), SwingConstants.RIGHT);
         add(lineNumbers, BorderLayout.WEST);
 
-        textPane = new JTextPane();//document); // StyledEditorKit
+        textPane = new JTextPane();
         textPane.setEditorKit(new TextEditorKit());
+        document = (TextEditorDocument) textPane.getDocument();
+        textPane.addCaretListener(document);
         add(new JScrollPane(textPane), BorderLayout.CENTER);
+
+        textPane.getInputMap().put(KeyStroke.getKeyStroke('\t', InputEvent.SHIFT_DOWN_MASK), document.reverseTabAction);
 
         setVisible(true);
     }
@@ -50,41 +52,14 @@ public class TextEditor extends JComponent {
         return currentFile;
     }
 
-    private void cleanDocument() {
-        try {
-            document.remove(0, document.getLength());
-        } catch (BadLocationException ex) {
-            ex.printStackTrace();
-        }
-    }
-
     public void loadFile(File file) throws FileNotFoundException {
         if(!file.exists() || file.isDirectory())
             throw new FileNotFoundException(Strings.FILE_NOT_EXIST_OR_DIR);
 
-        cleanDocument();
-
-        FileReader fr = new FileReader(file);
-
-        char[] buffer = new char[1024];
-        int bred;
-
         try {
-            while((bred = fr.read(buffer)) != -1) {
-                document.insertString(document.getLength(), new String(buffer, 0, bred), defaultStyle);
-            }
-
-            fr.close();
-        } catch (BadLocationException ex) {
+            document.readFile(file);
+        } catch (IOException | BadLocationException ex) {
             ex.printStackTrace();
-        } catch (IOException ex) {
-            ex.printStackTrace();
-        }
-
-        try {
-            highlighter.checkForHighlight(0, document.getLength());
-        } catch (BadLocationException e) {
-            e.printStackTrace();
         }
 
         currentFile = file;
@@ -96,18 +71,9 @@ public class TextEditor extends JComponent {
             throw new IllegalArgumentException(Strings.FILE_NOT_EXIST_OR_DIR);
 
         try {
-            FileWriter fw = new FileWriter(file);
-
-            try {
-                fw.write(document.getText(0, document.getLength()));
-            } catch (BadLocationException e) {
-                e.printStackTrace();
-            }
-
-            fw.close();
-
-        } catch (IOException e) {
-            e.printStackTrace();
+            document.writeFile(file);
+        } catch (IOException | BadLocationException ex) {
+            ex.printStackTrace();
         }
 
         currentFile = file;
@@ -116,7 +82,7 @@ public class TextEditor extends JComponent {
 
     public void newFile() {
         currentFile = null;
-        cleanDocument();
+        document.cleanDocument();
     }
 
 }

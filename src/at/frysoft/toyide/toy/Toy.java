@@ -1,115 +1,85 @@
 package at.frysoft.toyide.toy;
 
-import at.frysoft.toyide.Log;
-import at.frysoft.toyide.Strings;
-
-import java.io.*;
-
-public class Toy {
-
-    private PC pc;
-    private Memory memory;
-    private Memory register;
-
-    private Instruction currentInstruction;
+public class Toy extends CPU {
 
     public Toy() {
-        memory = new Memory(256);
-        register = new Memory(16);
-        pc = new PC(0x10);
+        super();
     }
 
-    public void reset() {
-        memory.reset();
-        register.reset();
-        pc.reset();
-    }
+    @Override
+    protected void execute(Instruction instr) {
+        switch(instr.getOPC()) {
 
-    public void load(String fileName) {
-        load(new File(fileName));
-    }
+            case Instruction.HLT:
+                return;
 
-    public boolean load(File file) {
-        reset();
-/*
-        if(!file.exists() || file.isDirectory()) {
-            Log.err.println(Strings.FILE_NOT_EXIST_OR_DIR);
-            return false;
+            case Instruction.ADD:
+                register.write(instr.getRd(),register.read(instr.getRs()) + register.read(instr.getRt()));
+                return;
+
+            case Instruction.SUB:
+                register.write(instr.getRd(),register.read(instr.getRs()) - register.read(instr.getRt()));
+                return;
+
+            case Instruction.AND:
+                register.write(instr.getRd(),register.read(instr.getRs()) & register.read(instr.getRt()));
+                return;
+
+            case Instruction.XOR:
+                register.write(instr.getRd(),register.read(instr.getRs()) ^ register.read(instr.getRt()));
+                return;
+
+            case Instruction.SHL:
+                register.write(instr.getRd(),register.read(instr.getRs()) << register.read(instr.getRt()));
+                return;
+
+            case Instruction.SHR:
+                register.write(instr.getRd(),register.read(instr.getRs()) >> register.read(instr.getRt()));
+                return;
+
+            case Instruction.LDA:
+                register.write(instr.getRd(), instr.getImm());
+                return;
+
+            case Instruction.LD:
+                register.write(instr.getRd(), memory.read(instr.getImm()));
+                return;
+
+            case Instruction.ST:
+                memory.write(instr.getImm(), register.read(instr.getRd()));
+                return;
+
+            case Instruction.LDI:
+                register.write(instr.getRd(), memory.read(instr.getRs() + register.read(instr.getRt())));
+                return;
+
+            case Instruction.STI:
+                memory.write(instr.getRs() + register.read(instr.getRt()), register.read(instr.getRd()));
+                return;
+
+            case Instruction.BZ:
+                if(register.read(instr.getRd()) == 0)
+                    pc.set(instr.getImm());
+                return;
+
+            case Instruction.BP:
+                if(register.read(instr.getRd()) > 0)
+                    pc.set(instr.getImm());
+                return;
+
+            case Instruction.JR:
+                pc.set(register.read(instr.getRd()));
+                return;
+
+            case Instruction.JL:
+                register.write(instr.getRd(), pc.get());
+                pc.set(instr.getImm());
+                return;
+
+            default:
+                throw new IllegalArgumentException("Invalid Instruction for Toy");
+
         }
-
-        try {
-            BufferedReader br = new BufferedReader(new FileReader(file));
-
-            int addr;
-            int data;
-            String line;
-            String[] r;
-
-            Log.out.println("Reading File:");
-            while((line = br.readLine()) != null) {
-                r = line.split(": ");
-
-                addr = Integer.parseInt(r[0], 16);
-                data = Integer.parseInt(r[1], 16);
-                Log.out.println(String.format("%02x", addr) + ": " + String.format("%04x", data));
-                memory.write(addr, data);
-            }
-            Log.out.println("Done reading File.");
-
-            br.close();
-            return true;
-
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-*/
-        return false;
-    }
-
-    public boolean step() {
-        currentInstruction = Instruction.getInstruction(pc, memory);
-
-        if(currentInstruction == null) {
-            Log.err.println("...mmmh... something went wrong here...");
-            return false;
-        }
-
-        currentInstruction.execute(pc, register, memory);
-        return !currentInstruction.isHalt();
-    }
-
-    private void printMemoryLine(Memory mem, int start, int end) {
-        Log.out.print(String.format("%02x", start) + ": ");
-        for(int i = start; i < end; ++i)
-            Log.out.print(String.format("%04x", mem.read(i)) + " ");
-        Log.out.println();
-    }
-
-    public void print(int memCount) {
-        /*
-        Log.out.println("*****************************************************************************************");
-        Log.out.print("PC: " + String.format("%02x", pc.getPrev()) + " => ");
-        Log.out.println("TupleInstruction: " + currentInstruction.getName() + " = "
-                           + String.format("%04x", currentInstruction.get()));
-
-        Log.out.println("-----------------------------------------------------------------------------------------");
-        Log.out.println("Register:");
-        printMemoryLine(register, 0, 16);
-
-        Log.out.println("-----------------------------------------------------------------------------------------");
-        Log.out.println("Memory:");
-        for(int i = 0; i < memCount; i += 16)
-            printMemoryLine(memory, i, i + 16);
-
-        Log.out.println("*****************************************************************************************");
-        */
-    }
-
-    public void print() {
-        print(0xFF);
     }
 
 }

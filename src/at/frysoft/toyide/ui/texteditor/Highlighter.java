@@ -1,10 +1,20 @@
 package at.frysoft.toyide.ui.texteditor;
 
-import javax.swing.text.*;
-import java.awt.*;
+import javafx.util.Pair;
+
+import javax.swing.text.BadLocationException;
+import javax.swing.text.Element;
+import javax.swing.text.Style;
+import java.util.Vector;
 
 /**
- * Created by Stefan on 20.05.2018.
+ * Highlighter.java
+ * <p>
+ * Created on : 26.05.2018
+ * Last update: 26.05.2018
+ * <p>
+ * Contributors:
+ * Stefan
  */
 public class Highlighter {
 
@@ -12,11 +22,17 @@ public class Highlighter {
 
     private TextEditorDocument document;
 
-    private int offset;
-
-    public Highlighter(TextEditorDocument document) {
+    public Highlighter(TextEditorDocument document, HighlightSettings settings) {
         this.document = document;
-        offset = 0;
+        this.settings = settings;
+    }
+
+    public void setSettings(HighlightSettings settings) {
+        this.settings = settings;
+    }
+
+    public Style getDefaultStyle() {
+        return settings.getStyle(HighlightSettings.DEFAULT_STYLE);
     }
 
     private boolean isSeparate(int offset, int length, String str) {
@@ -28,116 +44,127 @@ public class Highlighter {
 
         return (
                 (
-                 start < 33 ||
-                 start == '(' ||
-                 start == ')' ||
-                 start == ',' ||
-                 start == ';'
+                        start < 33 ||
+                                start == '(' ||
+                                start == ')' ||
+                                start == ',' ||
+                                start == ';'
                 ) && (
-                 end < 33 ||
-                 end == '(' ||
-                 end == ')' ||
-                 end == ',' ||
-                 end == ';'
+                        end < 33 ||
+                                end == '(' ||
+                                end == ')' ||
+                                end == ',' ||
+                                end == ';'
                 )
         );
     }
 
-    private void highlight(int offset, int length, int styleIndex) {
-        document.setCharacterAttributes(this.offset + offset, length,
-                                        settings.getStyle(styleIndex), false);
+    private void highlight(int offset, int length, Style style) {
+        document.setCharacterAttributes(offset, length, style, false);
 /*
         if(style == commentStyle)
             document.setCharacterAttributes(this.offset + offset, length, errorStyle, false);
             */
     }
 
-    private void highlightComment(int offset) {
-        int index = document.indexOf('\n', offset);
-        if(index == -1)
-            index = document.getLength();
-
-        int length = index - offset;
-        highlight(offset, length, HighlightSettings.DEFAULT_STYLE_COMMENT);
+    private void highlight(int offset, int length, int styleIndex) {
+        highlight(offset, length, settings.getStyle(styleIndex));
     }
 
-    private void highlightKeyword(String str, String keyword, Style style) {
-        int pos = -1;
-        int length = keyword.length();
-
-        while((pos = str.indexOf(keyword, pos + 1)) != -1) {
-            if(isSeparate(pos, length, str))
-                highlight(pos, length, style);
-        }
+    private void restoreDefaults(int offset, int length) {
+        document.setCharacterAttributes(
+                offset,
+                length,
+                settings.getStyle(HighlightSettings.DEFAULT_STYLE),
+                true
+       );
     }
 
-    private void highlightNumbers(String str) {
-        str = str.toUpperCase();
-
-        char c;
-        int numberStart = -1;
-        int numberLength = 0;
-        boolean hexadecimal = false;
-
-        for(int i = 0; i < str.length(); ++i) {
-            c = str.charAt(i);
-
-            if(c >= '0' && c <= '9') {
-                if(numberLength == 0)
-                    numberStart = i;
-
-                ++numberLength;
-                continue;
-            }
-
-            if(c == 'X' && numberLength == 1) {
-                ++numberLength;
-                hexadecimal = true;
-                continue;
-            }
-
-            if(hexadecimal && c >= 'A' && c <= 'F') {
-                ++numberLength;
-                continue;
-            }
-
-            if(numberLength != 0) {
-                if(isSeparate(numberStart, numberLength, str))
-                    highlight(numberStart, numberLength, HighlightSettings.DEFAULT_STYLE_NUMBER);
-                numberLength = 0;
-                hexadecimal = false;
-            }
-        }
-    }
-
-    public void checkForHighlight(int offset, int length) throws BadLocationException {
-        offset -= 5;
-        if(offset < 0)
-            offset = 0;
-        this.offset = offset;
-
-        length += 5;
-        if(document.getLength() < offset + length)
-            length = document.getLength() - offset;
-
-        String str = document.getText(offset, length);
-
-        int commentStart = str.indexOf(';');
-        if(commentStart != -1) {
-            str = str.substring(0, commentStart);
-            highlightComment(commentStart);
-        }
-
+    private void highlightKeyword(int offset, String word) {
         Style style;
-        for(KeywordGroup kwg : keywordGroups) {
+        for(KeywordGroup kwg : settings.getKeyWordGroups()) {
             style = kwg.getStyle();
 
             for(int i = 0; i < kwg.getKeywordCount(); ++i) {
-                highlightKeyword(str, kwg.getKeyword(i), style);
+                if(kwg.getKeyword(i).equals(word)) {
+                    highlight(offset, word.length(), style);
+                    return;
+                }
+            }
+        }
+        restoreDefaults(offset, word.length());
+    }
+
+    private boolean isNumber(String word) {
+        if(word.length() < 3 || word.charAt(0) != '0' || word.charAt(1) != 'x')
+            return false;
+
+        try {
+            Integer.parseInt(word.substring(2), 16);
+        }catch (NumberFormatException ex) {
+            return false;
+        }
+        return true;
+    }
+
+    private void highlightParagraph(Element paragraph) {
+        String line;
+        int offset = paragraph.getStartOffset();
+
+        try {
+            line = document.getText(paragraph.getStartOffset(), paragraph.getEndOffset() - paragraph.getStartOffset());
+        } catch (BadLocationException e) {
+            e.printStackTrace();
+            return;
+        }
+
+        int commentStart = line.indexOf(';');
+        if(commentStart != -1) {
+            highlight(commentStart + offset, line.length() - commentStart, HighlightSettings.DEFAULT_STYLE_COMMENT);
+            line = line.substring(0, commentStart);
+        }
+
+        if(line.isEmpty())
+            return;
+
+        if(line.charAt(line.length() - 1) == '\n')
+            line = line.substring(0, line.length() - 1);
+
+        String[] words = line.split(" ");
+
+        for(String word : words) {
+            if(!word.isEmpty()) {
+                if(isNumber(word))
+                    highlight(offset, word.length(), HighlightSettings.DEFAULT_STYLE_NUMBER);
+                else
+                    highlightKeyword(offset, word);
+            }
+            offset += word.length() + 1;
+        }
+
+
+    }
+
+    public void checkForHighlight(int offset, int length) throws BadLocationException {
+        Element paragraphStart = document.getParagraphElement(offset);
+        Element paragraphEnd = document.getParagraphElement(offset + length - 1);
+
+        if(paragraphStart.getStartOffset() != paragraphEnd.getStartOffset()) {
+            highlightParagraph(paragraphEnd);
+
+            if(paragraphStart.getEndOffset() != paragraphEnd.getStartOffset()) {
+                Element paragraph;
+                offset = paragraphStart.getEndOffset() + 1;
+
+                while (offset < paragraphEnd.getStartOffset()) {
+                    paragraph = document.getParagraphElement(offset);
+                    highlightParagraph(paragraph);
+                    offset = paragraph.getEndOffset() + 1;
+                }
             }
         }
 
-        highlightNumbers(str);
+        highlightParagraph(paragraphStart);
     }
 
 }

@@ -15,9 +15,11 @@ public class HighlightSettings {
 
     private Vector<Style> styles;
 
-    private HashMap<Integer, String[]> keywordGroups;
+    private Vector<KeywordGroup> keywordGroups;
 
     public HighlightSettings() {
+        styles = new Vector<>();
+        keywordGroups = new Vector<>();
     }
 
     public int addStyle(Style style) {
@@ -25,16 +27,16 @@ public class HighlightSettings {
         return (styles.size() - 1);
     }
 
-    public void addKeywordGroup(String[] kwg, Style style) {
-        keywordGroups.put(addStyle(style), kwg);
+    public void addKeywordGroup(KeywordGroup keywordGroup) {
+        keywordGroups.add(keywordGroup);
     }
 
     public Style getStyle(int index) {
         return styles.get(index);
     }
 
-    public Set<Map.Entry<Integer, String[]>> getKeyWordGroups() {
-        return keywordGroups.entrySet();
+    public Vector<KeywordGroup> getKeyWordGroups() {
+        return keywordGroups;
     }
 
     public static int DEFAULT_STYLE;
@@ -44,40 +46,52 @@ public class HighlightSettings {
 
     public static HighlightSettings createDefault(StyleContext styleContext) {
         HighlightSettings settings = new HighlightSettings();
-        String[] keyWords;
+        KeywordGroup kwg;
         Style defaultStyle, style;
 
+        // Default Style
         defaultStyle = styleContext.addStyle("DEFAULT", null);
-        defaultStyle.addAttribute(StyleConstants.FontFamily, "Consolas");
-        defaultStyle.addAttribute(StyleConstants.FontSize, 12);
+        //defaultStyle.addAttribute(StyleConstants.FontFamily, "Consolas");
+        StyleConstants.setFontFamily(defaultStyle, "Monospaced");
+        StyleConstants.setFontSize(defaultStyle, 12);
         StyleConstants.setBold(defaultStyle, false);
         StyleConstants.setItalic(defaultStyle, false);
         DEFAULT_STYLE = settings.addStyle(defaultStyle);
 
-        style = styleContext.addStyle("COLOR_ORANGE", defaultStyle);
+        // Numbers
+        style = styleContext.addStyle("NUMBER", defaultStyle);
         style.addAttribute(StyleConstants.Foreground, Color.ORANGE.darker());
         StyleConstants.setBold(style, true);
         DEFAULT_STYLE_NUMBER = settings.addStyle(style);
 
-        style = styleContext.addStyle("COLOR_GRAY", defaultStyle);
+        // Comments
+        style = styleContext.addStyle("COMMENT", defaultStyle);
         style.addAttribute(StyleConstants.Foreground, Color.GRAY);
         DEFAULT_STYLE_COMMENT = settings.addStyle(style);
 
+        // Syntax Errors
         style = styleContext.addStyle("ERROR", defaultStyle);
         style.addAttribute("ERROR", true);
         DEFAULT_STYLE_ERROR = settings.addStyle(style);
 
-        keyWords = new String[]{
+        // ToyCompiler Instructions
+        style = styleContext.addStyle("COMPILER_INSTRUCTION", defaultStyle);
+        style.addAttribute(StyleConstants.Foreground, new Color(200, 140, 255));
+        StyleConstants.setBold(style, true);
+        kwg = new KeywordGroup(style);
+        kwg.setKeywords(
                 Strings.COMPILER_INSTRUCTION_ORG,
                 Strings.COMPILER_INSTRUCTION_DW,
                 Strings.COMPILER_INSTRUCTION_DUP
-        };
-        style = styleContext.addStyle("COLOR_RED", defaultStyle);
-        style.addAttribute(StyleConstants.Foreground, Color.RED);
-        StyleConstants.setBold(style, true);
-        settings.addKeywordGroup(keyWords, style);
+        );
+        settings.addKeywordGroup(kwg);
 
-        keyWords = new String[] {
+        // Instructions
+        style = styleContext.addStyle("INSTRUCTION", defaultStyle);
+        style.addAttribute(StyleConstants.Foreground, Color.BLUE);
+        StyleConstants.setBold(style, true);
+        kwg = new KeywordGroup(style);
+        kwg.setKeywords(
                 Strings.INSTRUCTION_HLT,
                 Strings.INSTRUCTION_ADD,
                 Strings.INSTRUCTION_SUB,
@@ -94,16 +108,16 @@ public class HighlightSettings {
                 Strings.INSTRUCTION_BP,
                 Strings.INSTRUCTION_JR,
                 Strings.INSTRUCTION_JL
-        };
-        style = styleContext.addStyle("COLOR_BLUE", defaultStyle);
-        style.addAttribute(StyleConstants.Foreground, Color.BLUE);
-        StyleConstants.setBold(style, true);
-        settings.addKeywordGroup(keyWords, style);
+        );
+        settings.addKeywordGroup(kwg);
 
-        style = styleContext.addStyle("COLOR_GREEN", defaultStyle);
+        // Registers
+        style = styleContext.addStyle("REGISTER", defaultStyle);
         style.addAttribute(StyleConstants.Foreground, Color.GREEN.darker());
         StyleConstants.setBold(style, true);
-        settings.addKeywordGroup(Strings.REGISTER_NAMES, style);
+        kwg = new KeywordGroup(style);
+        kwg.setKeywords(Strings.REGISTER_NAMES);
+        settings.addKeywordGroup(kwg);
 
         return settings;
     }

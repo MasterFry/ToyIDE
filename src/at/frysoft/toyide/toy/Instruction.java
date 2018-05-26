@@ -1,8 +1,8 @@
 package at.frysoft.toyide.toy;
 
-import at.frysoft.toyide.toy.instructions.*;
+import at.frysoft.toyide.Strings;
 
-public abstract class Instruction {
+public class Instruction {
 
     public static final int HLT = 0x0;
     public static final int ADD = 0x1;
@@ -21,40 +21,19 @@ public abstract class Instruction {
     public static final int JR  = 0xE;
     public static final int JL  = 0xF;
 
-    public static Instruction getInstruction(PC pc, Memory memory) {
-        int instructionCode = memory.read(pc.get());
-
-        switch((instructionCode >> 12) & 0xF) {
-            case HLT: return new Hlt(instructionCode);
-            case ADD: return new Add(instructionCode);
-            case SUB: return new Sub(instructionCode);
-            case AND: return new And(instructionCode);
-            case XOR: return new Xor(instructionCode);
-            case SHL: return new Shl(instructionCode);
-            case SHR: return new Shr(instructionCode);
-            case LDA: return new Lda(instructionCode);
-            case LD : return new Ld (instructionCode);
-            case ST : return new St (instructionCode);
-            case LDI: return new Ldi(instructionCode);
-            case STI: return new Sti(instructionCode);
-            case BZ : return new Bz (instructionCode);
-            case BP : return new Bp (instructionCode);
-            case JR : return new Jr (instructionCode);
-            case JL : return new Jl (instructionCode);
-            default: return null;
-        }
-    }
+    public static final int PUSH = 0x1;
+    public static final int POP  = 0x2;
+    public static final int CALL = 0x3;
+    public static final int RET  = 0x4;
 
     protected int instruction;
 
-    protected Instruction(int instruction) {
-        this.instruction = instruction;
+    public Instruction() {
+        instruction = HLT;
     }
 
-    public void setImm(int imm, boolean areYouSure) {
-        if(!areYouSure)
-            return;
-        instruction = (instruction & 0xFF00) | imm;
+    public void set(int instruction) {
+        this.instruction = instruction;
     }
 
     public int get() {
@@ -82,11 +61,40 @@ public abstract class Instruction {
     }
 
     public boolean isHalt() {
-        return false;
+        return (instruction == 0);
     }
 
-    public abstract String getName();
+    public String getName() {
+        switch(getOPC()) {
+            case HLT:
+                // Switch for S-Toy Instructions
+                switch(getRd()) {
+                    case PUSH: return Strings.INSTRUCTION_PUSH;
+                    case POP : return Strings.INSTRUCTION_POP ;
+                    case CALL: return Strings.INSTRUCTION_CALL;
+                    case RET : return Strings.INSTRUCTION_RET ;
+                }
+                // Standard Toy Instructions
+                return Strings.INSTRUCTION_HLT;
 
-    public abstract void execute(PC pc, Memory register, Memory memory);
+            case ADD: return Strings.INSTRUCTION_ADD;
+            case SUB: return Strings.INSTRUCTION_SUB;
+            case AND: return Strings.INSTRUCTION_AND;
+            case XOR: return Strings.INSTRUCTION_XOR;
+            case SHL: return Strings.INSTRUCTION_SHL;
+            case SHR: return Strings.INSTRUCTION_SHR;
+            case LDA: return Strings.INSTRUCTION_LDA;
+            case LD : return Strings.INSTRUCTION_LD ;
+            case ST : return Strings.INSTRUCTION_ST ;
+            case LDI: return Strings.INSTRUCTION_LDI;
+            case STI: return Strings.INSTRUCTION_STI;
+            case BZ : return Strings.INSTRUCTION_BZ ;
+            case BP : return Strings.INSTRUCTION_BP ;
+            case JR : return Strings.INSTRUCTION_JR ;
+            case JL : return Strings.INSTRUCTION_JL ;
+            default:
+                throw new IllegalArgumentException("Invalid Instruction");
+        }
+    }
 
 }

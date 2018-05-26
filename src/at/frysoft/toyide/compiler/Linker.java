@@ -1,31 +1,32 @@
 package at.frysoft.toyide.compiler;
 
-import at.frysoft.toyide.compiler.tuple.Link;
-import at.frysoft.toyide.compiler.tuple.Tuple;
+import at.frysoft.toyide.compiler.statement.Address;
+import at.frysoft.toyide.compiler.statement.Statement;
 
 import java.util.HashMap;
-import java.util.Vector;
 
 /**
  * Created by Stefan on 19.05.2018.
  */
 public class Linker {
 
-    private HashMap<String, Tuple> linkedTuples;
+    private HashMap<String, Statement> linkedStatements;
 
     public Linker() {
-        linkedTuples = new HashMap<>();
+        linkedStatements = new HashMap<>();
     }
 
-    public void addTuple(Tuple tuple) {
-        linkedTuples.put(tuple.getLink(), tuple);
+    public void add(Statement stmt) {
+        linkedStatements.put(stmt.getLink(), stmt);
     }
 
-    public void link(Tuple tuple) throws SymbolicLinkNotFoundException {
-        if(!linkedTuples.containsKey(tuple.getLinkTo()))
-            throw new SymbolicLinkNotFoundException(tuple.getLinkTo());
+    public void link(Statement stmt) throws SymbolicLinkNotFoundException {
+        Address addressParam = (Address) stmt.getAddressParam();
 
-        tuple.link(linkedTuples.get(tuple.getLinkTo()));
+        if(!linkedStatements.containsKey(addressParam.getString()))
+            throw new SymbolicLinkNotFoundException(addressParam.getString());
+
+        addressParam.setAddress(linkedStatements.get(addressParam.getString()).getAddress());
     }
 
 }

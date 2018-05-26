@@ -3,6 +3,7 @@ package at.frysoft.toyide.ui;
 import at.frysoft.toyide.Log;
 import at.frysoft.toyide.Utils;
 import at.frysoft.toyide.compiler.ToyCompiler;
+import at.frysoft.toyide.toy.SToy;
 import at.frysoft.toyide.toy.Toy;
 
 import javax.swing.*;
@@ -54,8 +55,8 @@ public class InputHandler implements ActionListener {
 
             case ToolBar.C_A_R:
                 saveFile();
-                compile();
-                run();
+                if(compile())
+                    run();
                 break;
 
         }
@@ -114,13 +115,12 @@ public class InputHandler implements ActionListener {
         toyIdeWindow.textEditor.newFile();
     }
 
-    private void compile() {
-        ToyCompiler tc = new ToyCompiler();
-        tc.compile(toyIdeWindow.textEditor.getCurrentFile());
+    private boolean compile() {
+        return ToyCompiler.compile(toyIdeWindow.textEditor.getCurrentFile());
     }
 
     private void run() {
-        Toy toy = new Toy();
+        Toy toy = new SToy();
 
         String dst = Utils.fileNameAsmToToy(toyIdeWindow.textEditor.getCurrentFile().getAbsolutePath());
         if(dst == null)
@@ -131,7 +131,6 @@ public class InputHandler implements ActionListener {
             toy.print();
         toy.print();
 
-        toy.print();
         Log.out.println("Toy Has finished executing.");
     }
 

@@ -13,7 +13,7 @@ public class SyntaxException extends Exception {
 
     @Override
     public String getMessage() {
-        return (msg);
+        return msg;
     }
 
 }

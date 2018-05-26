@@ -70,6 +70,7 @@ public class Log {
                 console.addText(string, null);
             }
             System.out.print(string);
+            System.out.flush();
         }
 
     }
@@ -85,6 +86,7 @@ public class Log {
                 console.addText(string, console.styleColorRed);
             }
             System.err.print(string);
+            System.err.flush();
         }
 
     }
@@ -97,6 +99,7 @@ public class Log {
         @Override
         protected void write(String string) {
             System.out.print(string);
+            System.out.flush();
         }
 
     }
@@ -109,6 +112,7 @@ public class Log {
         @Override
         protected void write(String string) {
             System.err.print(string);
+            System.err.flush();
         }
 
     }

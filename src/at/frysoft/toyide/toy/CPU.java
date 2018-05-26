@@ -1,4 +1,4 @@
-package at.frysoft.toyide.toy1;
+package at.frysoft.toyide.toy;
 
 import at.frysoft.toyide.Log;
 import at.frysoft.toyide.Strings;
@@ -19,6 +19,7 @@ public abstract class CPU {
         memory = new Memory(256);
         register = new Memory(16);
         pc = new PC(0x10);
+        currentInstruction = new Instruction();
         reset();
     }
 
@@ -82,7 +83,7 @@ public abstract class CPU {
         execute(currentInstruction);
         ++executedInstructions;
 
-        return (currentInstruction.getOPC() != Instruction.HLT);
+        return !currentInstruction.isHalt();
     }
 
     public void run() {
@@ -101,21 +102,21 @@ public abstract class CPU {
     }
 
     public void print(int memCount) {
-        Log.out.println("*****************************************************************************************");
+        Log.out.println();
+        Log.out.println("***********************************************************************************");
         Log.out.print("PC: " + String.format("%02x", pc.getPrev()) + " => ");
-        Log.out.println("TupleInstruction: " + currentInstruction.getName() + " = "
-                                + String.format("%04x", currentInstruction.get()));
+        Log.out.println("Instruction: " + currentInstruction.getName() + " = " +
+                        String.format("%04x", currentInstruction.get()));
 
-        Log.out.println("-----------------------------------------------------------------------------------------");
+        Log.out.println("-----------------------------------------------------------------------------------");
         Log.out.println("Register:");
         printMemoryLine(register, 0, 16);
 
-        Log.out.println("-----------------------------------------------------------------------------------------");
+        Log.out.println("-----------------------------------------------------------------------------------");
         Log.out.println("Memory:");
         for(int i = 0; i < memCount; i += 16)
             printMemoryLine(memory, i, i + 16);
-
-        Log.out.println("*****************************************************************************************");
+        Log.out.println("***********************************************************************************");
     }
 
     public void print() {

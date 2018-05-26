@@ -3,10 +3,8 @@ package at.frysoft.toyide.compiler;
 import at.frysoft.toyide.Log;
 import at.frysoft.toyide.Strings;
 import at.frysoft.toyide.Utils;
-import at.frysoft.toyide.compiler.tuple.Dup;
-import at.frysoft.toyide.compiler.tuple.Dw;
-import at.frysoft.toyide.compiler.tuple.Org;
-import at.frysoft.toyide.compiler.tuple.Tuple;
+import at.frysoft.toyide.compiler.statement.OPC;
+import at.frysoft.toyide.compiler.statement.Statement;
 
 import java.io.*;
 import java.util.Vector;
@@ -14,23 +12,29 @@ import java.util.Vector;
 import static at.frysoft.toyide.Strings.COMPILER_COMPILING_FILE;
 
 /**
- * Created by Stefan on 19.05.2018.
+ * Created on : 26.05.2018
+ * Last update: 26.05.2018
+ * <p>
+ * Contributors:
+ * Stefan
  */
 public class ToyCompiler {
 
-    private Vector<Tuple> tuples;
-
-    private Linker linker;
-
-    public ToyCompiler() {
+    private static void setPrefix() {
+        Log.out.setPrefix("[ToyCompiler]: ");
+        Log.err.setPrefix("[ToyCompiler]: ");
     }
 
-    public boolean compile(File srcFile) {
+    private static void resetPrefix() {
+        Log.out.setPrefix(null);
+        Log.err.setPrefix(null);
+    }
+
+    public static boolean compile(File srcFile) {
         String src = srcFile.getAbsolutePath();
 
+        setPrefix();
         Log.out.println(COMPILER_COMPILING_FILE + src);
-        Log.out.setPrefix("  ");
-        Log.err.setPrefix("  ");
 
         if(!srcFile.exists() || srcFile.isDirectory()) {
             Log.err.println(Strings.FILE_NOT_EXIST_OR_DIR);
@@ -51,13 +55,14 @@ public class ToyCompiler {
             dstFile.getParentFile().mkdirs();
         }
 
-        return compile(srcFile, dstFile);
+        boolean result = compile(srcFile, dstFile);
+        resetPrefix();
+        return result;
     }
 
-    public boolean compile(String src, String dst) {
+    public static boolean compile(String src, String dst) {
+        setPrefix();
         Log.out.println(COMPILER_COMPILING_FILE + src);
-        Log.out.setPrefix("  ");
-        Log.err.setPrefix("  ");
 
         File srcFile = new File(src);
         if(!srcFile.exists() || srcFile.isDirectory()) {
@@ -75,39 +80,33 @@ public class ToyCompiler {
             dstFile.getParentFile().mkdirs();
         }
 
-        return compile(srcFile, dstFile);
+        boolean result = compile(srcFile, dstFile);
+        resetPrefix();
+        return result;
     }
 
-    public boolean compile(File srcFile, File dstFile) {
-        tuples = new Vector<>();
-        linker = new Linker();
+    private static boolean compile(File srcFile, File dstFile) {
+        Vector<Statement> statements = new Vector<>();
+        Linker linker = new Linker();
+
         boolean error = false;
+        int currentLine = 1;
+        String line = "";
 
-
-        // Parse code lines into Tuples
+        // Read the file and compile a list of statements
         try {
             BufferedReader br = new BufferedReader(new FileReader(srcFile));
-
-            int currentLine = 1;
-            Tuple tuple = null;
-            String line;
+            Statement stmt;
 
             while((line = br.readLine()) != null) {
+                stmt = Parser.parseLine(line);
 
-                try {
-                    tuple = Parser.parseLine(line);
-                } catch (SyntaxException ex) {
-                    Log.err.println(String.format(Strings.COMPILER_SYNTAX_ERROR, ex.getMessage()) +
-                                    String.format(Strings.COMPILER_ON_LINE, currentLine, line));
-                    error = true;
-                }
+                if(stmt != null) {
+                    statements.add(stmt);
+                    stmt.setLineIndex(currentLine);
 
-                if(tuple != null) {
-                    tuple.setCodeLine(currentLine);
-                    tuples.add(tuple);
-
-                    if(tuple.getLink() != null)
-                        linker.addTuple(tuple);
+                    if(stmt.getLink() != null)
+                        linker.add(stmt);
                 }
 
                 ++currentLine;
@@ -115,44 +114,48 @@ public class ToyCompiler {
 
             br.close();
 
-        } catch (FileNotFoundException ex) {
-            ex.printStackTrace();
-            return false;
-
         } catch (IOException ex) {
             ex.printStackTrace();
             return false;
+
+        } catch (SyntaxException ex) {
+            Log.err.println(String.format(Strings.COMPILER_SYNTAX_ERROR, ex.getMessage()) +
+                                    String.format(Strings.COMPILER_ON_LINE, currentLine, line));
+            error = true;
         }
 
         if(error)
             return false;
 
-        // Assign address locations to tuples
+        // Assign addresses to statements
         int address = 0;
-        for(Tuple tuple : tuples) {
-            if (tuple.getInstruction() instanceof Org) {
-                address = tuple.getInstruction().get();
+        OPC opc;
+        for(Statement stmt : statements) {
+            opc = stmt.getOPC();
 
-            }else if (tuple.getInstruction() instanceof Dup) {
-                address += tuple.getInstruction().get();
+            if(opc == OPC.ORG) {
+                address = stmt.getParameter(0).getInt();
+
+            }else if(opc == OPC.DUP) {
+                stmt.setAddress(address);
+                address += stmt.getParameter(1).getInt();
 
             }else {
-                if(!(tuple.getInstruction() instanceof Dw) && address < 0x10)
+                if(opc != OPC.DW && address < 0x10)
                     address = 0x10;
-                tuple.setAddress(address);
+                stmt.setAddress(address);
                 ++address;
             }
         }
 
-        // Insert addresses of symbolic links
-        for(Tuple tuple : tuples) {
-            if(tuple.getLinkTo() != null) {
-                try{
-                    linker.link(tuple);
-                }catch (SymbolicLinkNotFoundException ex) {
+        // Replace symbolic links with addresses
+        for(Statement stmt : statements) {
+            if(stmt.hasAddressParam()) {
+                try {
+                    linker.link(stmt);
+                } catch (SymbolicLinkNotFoundException ex) {
                     Log.err.println(Strings.COMPILER_NO_SYMBOLIC_LINK +
-                                    String.format(Strings.COMPILER_ON_LINE, tuple.getCodeLine(), ex.getMessage()));
-                    error = true;
+                                    String.format(Strings.COMPILER_ON_LINE, stmt.getLineIndex(), ex.getMessage()));
                 }
             }
         }
@@ -164,18 +167,23 @@ public class ToyCompiler {
         try {
             FileWriter fw = new FileWriter(dstFile);
 
-            for(Tuple tuple : tuples) {
+            String str = "";
+            for(Statement stmt : statements) {
+                opc = stmt.getOPC();
 
-                if(tuple.getInstruction() instanceof Org) {
-                    continue;
-
-                } else if(tuple.getInstruction() instanceof Dup) {
-                    for(int i = 0; i < tuple.getInstruction().get(); ++i) {
-                        fw.write(String.format("%02X", i + tuple.getAddress()) + ": 0000\n");
+                if(opc == OPC.DW) {
+                    fw.write(String.format("%02X", stmt.getAddress()) + ": " +
+                                     String.format("%04X", stmt.getParameter(1).getInt()) + '\n');
+                    str = String.format("%02X", stmt.getAddress()) + ": " + String.format("%04X", stmt.getParameter(1).getInt()) + '\n';
+                }else if(opc == OPC.DUP) {
+                    for (int i = 0; i < stmt.getParameter(1).getInt(); ++i) {
+                        fw.write(String.format("%02X", i + stmt.getAddress()) + ": 0000\n");
+                        str = String.format("%02X", i + stmt.getAddress()) + ": 0000\n";
                     }
 
-                }else {
-                    fw.write(String.format("%02X", tuple.getAddress()) + ": " + String.format("%04X", tuple.getInstruction().get()) + "\n");
+                }else if(opc != OPC.ORG) {
+                    fw.write(String.format("%02X", stmt.getAddress()) + ": " + stmt.getBinaryString() + '\n');
+                    str = String.format("%02X", stmt.getAddress()) + ": " + stmt.getBinaryString() + '\n';
                 }
 
             }
@@ -187,8 +195,6 @@ public class ToyCompiler {
             return false;
         }
 
-        Log.out.setPrefix(null);
-        Log.err.setPrefix(null);
         Log.out.println(Strings.COMPILER_FILE_COMPILED_TO + dstFile.getAbsolutePath());
 
         return true;
