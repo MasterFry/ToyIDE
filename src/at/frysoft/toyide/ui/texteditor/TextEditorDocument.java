@@ -1,6 +1,9 @@
 package at.frysoft.toyide.ui.texteditor;
 
-import at.frysoft.toyide.ProjectSettings;
+import at.frysoft.toyide.settings.ProjectSettings;
+import at.frysoft.toyide.settings.SettingInteger;
+import at.frysoft.toyide.settings.SettingString;
+import at.frysoft.toyide.settings.Settings;
 
 import javax.swing.*;
 import javax.swing.event.CaretEvent;
@@ -21,13 +24,18 @@ public class TextEditorDocument extends DefaultStyledDocument implements CaretLi
     private Highlighter highlighter;
 
     private int caretPosition;
+    private String indent;
 
     public final ReverseTabAction reverseTabAction;
 
     public TextEditorDocument(StyleContext styleContext) {
         super(styleContext);
         highlighter = null;
+
         caretPosition = 0;
+
+        int indentCount = ((SettingInteger) Settings.get(Settings.INDENT)).getValue();
+        indent = String.format("%" + indentCount + "c", ' ');
 
         reverseTabAction = new ReverseTabAction();
     }
@@ -38,7 +46,7 @@ public class TextEditorDocument extends DefaultStyledDocument implements CaretLi
 
     @Override
     public void insertString(int offset, String str, AttributeSet a) throws BadLocationException {
-        str = str.replace("\t", ProjectSettings.indent);
+        str = str.replace("\t", indent);
 
         super.insertString(offset, str, highlighter.getDefaultStyle());
 

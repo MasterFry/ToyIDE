@@ -1,7 +1,8 @@
 package at.frysoft.toyide.ui;
 
 import at.frysoft.toyide.Main;
-import at.frysoft.toyide.ProjectSettings;
+import at.frysoft.toyide.settings.ProjectSettings;
+import at.frysoft.toyide.settings.Settings;
 import at.frysoft.toyide.ui.texteditor.TextEditor;
 
 import javax.swing.*;
@@ -16,8 +17,6 @@ public class ToyIdeWindow extends JFrame {
     protected Console console;
     protected TextEditor textEditor;
 
-    protected ProjectSettings projectSettings;
-
     private InputHandler inputHandler;
 
     public ToyIdeWindow() {
@@ -26,9 +25,6 @@ public class ToyIdeWindow extends JFrame {
 
         int width = 900;
         int height = 600;
-
-        projectSettings = new ProjectSettings();
-        if(Main.DEBUG) projectSettings.workspace = new File("F:\\Programmieren\\JAVA\\ToyIDE\\testfiles\\");
 
         inputHandler = new InputHandler(this);
         ToolBar toolBar = new ToolBar(inputHandler);

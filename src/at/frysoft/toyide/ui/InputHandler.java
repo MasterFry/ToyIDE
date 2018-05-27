@@ -1,10 +1,15 @@
 package at.frysoft.toyide.ui;
 
 import at.frysoft.toyide.Log;
+import at.frysoft.toyide.Main;
 import at.frysoft.toyide.Utils;
 import at.frysoft.toyide.compiler.ToyCompiler;
+import at.frysoft.toyide.settings.Setting;
+import at.frysoft.toyide.settings.SettingString;
+import at.frysoft.toyide.settings.Settings;
 import at.frysoft.toyide.toy.SToy;
 import at.frysoft.toyide.toy.Toy;
+import at.frysoft.toyide.ui.settings.SettingsWindow;
 
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
@@ -59,16 +64,28 @@ public class InputHandler implements ActionListener {
                     run();
                 break;
 
+            case ToolBar.SETTINGS:
+                new SettingsWindow(toyIdeWindow);
+                break;
+
         }
     }
 
     private File selectFile() {
         JFileChooser chooser;
 
-        if(toyIdeWindow.projectSettings.workspace == null)
+        Setting workspace = Settings.get(Settings.WORKSPACE);
+        if(workspace != null) {
+            File file = new File(((SettingString) workspace).getValue());
+
+            if(file.exists() && !file.isDirectory())
+                chooser = new JFileChooser(file);
+            else
+                chooser = new JFileChooser();
+
+        }else {
             chooser = new JFileChooser();
-        else
-            chooser = new JFileChooser(toyIdeWindow.projectSettings.workspace);
+        }
 
         FileNameExtensionFilter filter = new FileNameExtensionFilter("Toy-Assembler Files", "asm");
         chooser.setFileFilter(filter);

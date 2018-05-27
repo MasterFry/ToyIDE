@@ -1,5 +1,6 @@
 package at.frysoft.toyide;
 
+import at.frysoft.toyide.settings.Settings;
 import at.frysoft.toyide.ui.ToyIdeWindow;
 
 import javax.swing.*;

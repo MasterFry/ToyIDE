@@ -6,7 +6,7 @@ import at.frysoft.toyide.compiler.statement.Statement;
 import java.util.HashMap;
 
 /**
- * Created by Stefan on 19.05.2018.
+ * Created by Stefan on 26.05.2018.
  */
 public class Linker {
 

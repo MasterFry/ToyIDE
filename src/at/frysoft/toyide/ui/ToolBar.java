@@ -16,6 +16,7 @@ public class ToolBar extends JPanel {
     public static final String COMPILE  = "Compile";
     public static final String RUN      = "Run";
     public static final String C_A_R    = "C&R";
+    public static final String SETTINGS = "Settings";
 
     public ToolBar(ActionListener actionListener) {
         JButton b;
@@ -30,7 +31,7 @@ public class ToolBar extends JPanel {
         
         String[] buttonNames = {
             LOAD, SAVE, SAVE_AS, NEW,
-            COMPILE, RUN, C_A_R
+            COMPILE, RUN, C_A_R, SETTINGS
         };
 
         for(String buttonName : buttonNames) {
