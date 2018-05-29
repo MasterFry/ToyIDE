@@ -2,13 +2,13 @@ package at.frysoft.toyide.toy;
 
 public class Memory {
 
-    private int data[];
+    private short data[];
 
     public Memory(int size) {
-        data = new int[size];
+        data = new short[size];
     }
 
-    public int read(int addr) {
+    public short read(int addr) {
         if(addr > data.length) {
             return -1;
         }
@@ -19,7 +19,7 @@ public class Memory {
         if(addr > this.data.length) {
             return false;
         }
-        this.data[addr] = data;
+        this.data[addr] = (short)data;
         return true;
     }
 

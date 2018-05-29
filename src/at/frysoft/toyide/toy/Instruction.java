@@ -4,29 +4,29 @@ import at.frysoft.toyide.Strings;
 
 public class Instruction {
 
-    public static final int HLT = 0x0;
-    public static final int ADD = 0x1;
-    public static final int SUB = 0x2;
-    public static final int AND = 0x3;
-    public static final int XOR = 0x4;
-    public static final int SHL = 0x5;
-    public static final int SHR = 0x6;
-    public static final int LDA = 0x7;
-    public static final int LD  = 0x8;
-    public static final int ST  = 0x9;
-    public static final int LDI = 0xA;
-    public static final int STI = 0xB;
-    public static final int BZ  = 0xC;
-    public static final int BP  = 0xD;
-    public static final int JR  = 0xE;
-    public static final int JL  = 0xF;
+    public static final byte HLT = 0x0;
+    public static final byte ADD = 0x1;
+    public static final byte SUB = 0x2;
+    public static final byte AND = 0x3;
+    public static final byte XOR = 0x4;
+    public static final byte SHL = 0x5;
+    public static final byte SHR = 0x6;
+    public static final byte LDA = 0x7;
+    public static final byte LD  = 0x8;
+    public static final byte ST  = 0x9;
+    public static final byte LDI = 0xA;
+    public static final byte STI = 0xB;
+    public static final byte BZ  = 0xC;
+    public static final byte BP  = 0xD;
+    public static final byte JR  = 0xE;
+    public static final byte JL  = 0xF;
 
-    public static final int PUSH = 0x1;
-    public static final int POP  = 0x2;
-    public static final int CALL = 0x3;
-    public static final int RET  = 0x4;
+    public static final byte PUSH = 0x1;
+    public static final byte POP  = 0x2;
+    public static final byte CALL = 0x3;
+    public static final byte RET  = 0x4;
 
-    protected int instruction;
+    private int instruction;
 
     public Instruction() {
         instruction = HLT;
