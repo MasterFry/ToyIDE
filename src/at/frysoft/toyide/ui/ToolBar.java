@@ -14,8 +14,10 @@ public class ToolBar extends JPanel {
     public static final String SAVE_AS  = "SaveAs";
     public static final String NEW      = "New";
     public static final String COMPILE  = "Compile";
+    public static final String START    = "Start";
+    public static final String STEP     = "Step";
     public static final String RUN      = "Run";
-    public static final String C_A_R    = "C&R";
+    public static final String C_A_R    = "Compile and Run";
     public static final String SETTINGS = "Settings";
 
     public ToolBar(ActionListener actionListener) {
@@ -30,8 +32,8 @@ public class ToolBar extends JPanel {
         gbc.anchor = GridBagConstraints.LINE_START;
         
         String[] buttonNames = {
-            LOAD, SAVE, SAVE_AS, NEW,
-            COMPILE, RUN, C_A_R, SETTINGS
+            LOAD, SAVE, SAVE_AS, NEW, COMPILE,
+            START, STEP, RUN, C_A_R, SETTINGS
         };
 
         for(String buttonName : buttonNames) {

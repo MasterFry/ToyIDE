@@ -1,9 +1,9 @@
 package at.frysoft.toyide.toy;
 
 import at.frysoft.toyide.Log;
-import at.frysoft.toyide.Strings;
 
 import java.io.*;
+import java.util.Vector;
 
 public abstract class CPU {
 
@@ -15,21 +15,41 @@ public abstract class CPU {
 
     private int executedInstructions;
 
+    private boolean halted;
+
+    private Vector<CpuListener> cpuListeners;
+
     public CPU() {
-        memory = new Memory(256);
-        register = new Memory(16);
+        memory = new Memory(0x100);
+        memory.lockAddress(0xFF);
+
+        register = new Memory(0x10);
+        register.lockAddress(0x0);
+
         pc = new PC(0x10);
+
         currentInstruction = new Instruction();
+        cpuListeners = new Vector<>();
+
         reset();
     }
 
     protected abstract void execute(Instruction instr);
+
+    public Memory getMemory() {
+        return memory;
+    }
+
+    public Memory getRegister() {
+        return register;
+    }
 
     public void reset() {
         memory.reset();
         register.reset();
         pc.reset();
         executedInstructions = 0;
+        halted = false;
     }
 
     public void load(String fileName) {
@@ -37,57 +57,52 @@ public abstract class CPU {
     }
 
     public boolean load(File file) {
-        reset();
-
-        if(!file.exists() || file.isDirectory()) {
-            Log.err.println(Strings.FILE_NOT_EXIST_OR_DIR);
-            return false;
-        }
-
-        try {
-            BufferedReader br = new BufferedReader(new FileReader(file));
-
-            int addr;
-            int data;
-            String line;
-            String[] r;
-
-            Log.out.println("Reading File:");
-            while((line = br.readLine()) != null) {
-                r = line.split(": ");
-
-                addr = Integer.parseInt(r[0], 16);
-                data = Integer.parseInt(r[1], 16);
-                Log.out.println(String.format("%02x", addr) + ": " + String.format("%04x", data));
-                memory.write(addr, data);
-            }
-            Log.out.println("Done reading File.");
-
-            br.close();
-            return true;
-
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        return false;
+        return memory.load(file);
     }
 
-    public boolean step() {
-        currentInstruction.set(memory.read(pc.get()));
-        pc.increment();
+    public void start() {
+        loadInstruction();
+    }
+
+    public void step() {
+        if(halted)
+            return;
 
         execute(currentInstruction);
         ++executedInstructions;
 
-        return !currentInstruction.isHalt();
+        if(cpuListeners.size() != 0) {
+            CpuEvent e = new CpuEvent(pc.get(), currentInstruction, this);
+            for(CpuListener l : cpuListeners)
+                l.onInstructionExecuted(e);
+        }
+
+        if(currentInstruction.isHalt())
+            halted = true;
+        else
+            loadInstruction();
+    }
+
+    private void loadInstruction() {
+        currentInstruction.set(memory.read(pc.get()));
+
+        if(cpuListeners.size() != 0) {
+            CpuEvent e = new CpuEvent(pc.get(), currentInstruction, this);
+            for(CpuListener l : cpuListeners)
+                l.onInstructionChanged(e);
+        }
+
+        pc.increment();
     }
 
     public void run() {
-        while(step());
+        start();
+        while(!halted)
+            step();
+    }
+
+    public boolean isHalted() {
+        return halted;
     }
 
     public int getExecutedInstructions() {
@@ -121,6 +136,14 @@ public abstract class CPU {
 
     public void print() {
         print(0xFF);
+    }
+
+    public void addCpuListener(CpuListener cpuListener) {
+        cpuListeners.add(cpuListener);
+    }
+
+    public void removeCpuListener(CpuListener cpuListener) {
+        cpuListeners.remove(cpuListener);
     }
 
 }

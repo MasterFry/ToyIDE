@@ -1,7 +1,7 @@
 package at.frysoft.toyide.ui.texteditor;
 
 import at.frysoft.toyide.Log;
-import at.frysoft.toyide.Strings;
+import at.frysoft.toyide.ressources.R;
 
 import javax.swing.*;
 import javax.swing.text.BadLocationException;
@@ -18,8 +18,6 @@ public class TextEditor extends JComponent {
 
     private File currentFile;
 
-    private JLabel lineNumbers;
-
     private JTextPane textPane;
 
     private TextEditorDocument document;
@@ -27,23 +25,14 @@ public class TextEditor extends JComponent {
     public TextEditor() {
         setLayout(new BorderLayout());
 
-        StringBuilder sb = new StringBuilder();
-        sb.append("<html>");
-        for(int i = 1; i <= 20; ++i) {
-            sb.append(" ");
-            sb.append(i);
-            sb.append(" <br>");
-        }
-        sb.append("</html>");
-
-        lineNumbers = new JLabel(sb.toString(), SwingConstants.RIGHT);
-        add(lineNumbers, BorderLayout.WEST);
-
         textPane = new JTextPane();
         textPane.setEditorKit(new TextEditorKit());
         document = (TextEditorDocument) textPane.getDocument();
         textPane.addCaretListener(document);
-        add(new JScrollPane(textPane), BorderLayout.CENTER);
+
+        JScrollPane sp = new JScrollPane(textPane);
+        sp.setRowHeaderView(new TextLineNumber(textPane));
+        add(sp, BorderLayout.CENTER);
 
         textPane.getInputMap().put(KeyStroke.getKeyStroke('\t', InputEvent.SHIFT_DOWN_MASK), document.reverseTabAction);
 
@@ -56,7 +45,7 @@ public class TextEditor extends JComponent {
 
     public void loadFile(File file) throws FileNotFoundException {
         if(!file.exists() || file.isDirectory())
-            throw new FileNotFoundException(Strings.FILE_NOT_EXIST_OR_DIR);
+            throw new FileNotFoundException(R.strings.file.NOT_EXIST_OR_IS_DIR);
 
         try {
             document.readFile(file);
@@ -65,12 +54,12 @@ public class TextEditor extends JComponent {
         }
 
         currentFile = file;
-        Log.out.println(String.format(Strings.FILE_X_LOADED, file.getAbsoluteFile()));
+        Log.out.println(R.strings.file.LOADED(file));
     }
 
     public void saveFile(File file) {
         if(file.exists() && file.isDirectory())
-            throw new IllegalArgumentException(Strings.FILE_NOT_EXIST_OR_DIR);
+            throw new IllegalArgumentException(R.strings.file.NOT_EXIST_OR_IS_DIR);
 
         try {
             document.writeFile(file);
@@ -79,7 +68,7 @@ public class TextEditor extends JComponent {
         }
 
         currentFile = file;
-        Log.out.println(String.format(Strings.FILE_X_SAVED, file.getAbsoluteFile()));
+        Log.out.println(R.strings.file.SAVED(file));
     }
 
     public void newFile() {

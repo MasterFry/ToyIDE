@@ -20,11 +20,11 @@ public class Linker {
         linkedStatements.put(stmt.getLink(), stmt);
     }
 
-    public void link(Statement stmt) throws SymbolicLinkNotFoundException {
+    public void link(Statement stmt) throws LinkerException {
         Address addressParam = (Address) stmt.getAddressParam();
 
         if(!linkedStatements.containsKey(addressParam.getString()))
-            throw new SymbolicLinkNotFoundException(addressParam.getString());
+            throw new LinkerException(addressParam.getString());
 
         addressParam.setAddress(linkedStatements.get(addressParam.getString()).getAddress());
     }

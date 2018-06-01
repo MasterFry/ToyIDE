@@ -1,14 +1,9 @@
 package at.frysoft.toyide.ui;
 
 import at.frysoft.toyide.Log;
-import at.frysoft.toyide.Main;
 import at.frysoft.toyide.Utils;
 import at.frysoft.toyide.compiler.ToyCompiler;
-import at.frysoft.toyide.settings.Setting;
-import at.frysoft.toyide.settings.SettingString;
-import at.frysoft.toyide.settings.Settings;
-import at.frysoft.toyide.toy.SToy;
-import at.frysoft.toyide.toy.Toy;
+import at.frysoft.toyide.ressources.R;
 import at.frysoft.toyide.ui.settings.SettingsWindow;
 
 import javax.swing.*;
@@ -18,17 +13,16 @@ import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.FileNotFoundException;
 
-/**
- * Created by Stefan on 21.05.2018.
- */
 public class InputHandler implements ActionListener {
 
     private ToyIdeWindow toyIdeWindow;
 
+    // -----------------------------------------------------------------------------------------------------------------
     protected InputHandler(ToyIdeWindow toyIdeWindow) {
         this.toyIdeWindow = toyIdeWindow;
     }
 
+    // -----------------------------------------------------------------------------------------------------------------
     @Override
     public void actionPerformed(ActionEvent e) {
         switch(e.getActionCommand()) {
@@ -54,14 +48,24 @@ public class InputHandler implements ActionListener {
                 compile();
                 break;
 
+            case ToolBar.START:
+                start();
+                break;
+
+            case ToolBar.STEP:
+                step();
+                break;
+
             case ToolBar.RUN:
                 run();
                 break;
 
             case ToolBar.C_A_R:
                 saveFile();
-                if(compile())
+                if(compile()) {
+                    start();
                     run();
+                }
                 break;
 
             case ToolBar.SETTINGS:
@@ -71,83 +75,90 @@ public class InputHandler implements ActionListener {
         }
     }
 
-    private File selectFile() {
+    // -----------------------------------------------------------------------------------------------------------------
+    private File selectFile(String type) {
+        File file = new File(R.settings.getString(R.settings.WORKSPACE));
+
         JFileChooser chooser;
-
-        Setting workspace = Settings.get(Settings.WORKSPACE);
-        if(workspace != null) {
-            File file = new File(((SettingString) workspace).getValue());
-
-            if(file.exists() && !file.isDirectory())
-                chooser = new JFileChooser(file);
-            else
-                chooser = new JFileChooser();
-
-        }else {
+        if(file.exists() && file.isDirectory())
+            chooser = new JFileChooser(file);
+        else
             chooser = new JFileChooser();
-        }
 
         FileNameExtensionFilter filter = new FileNameExtensionFilter("Toy-Assembler Files", "asm");
         chooser.setFileFilter(filter);
 
-        int returnValue = chooser.showOpenDialog(toyIdeWindow);
+        int returnValue = chooser.showDialog(toyIdeWindow, type);
         if(returnValue == JFileChooser.APPROVE_OPTION) {
             return chooser.getSelectedFile();
         }
         return null;
     }
 
+    // -----------------------------------------------------------------------------------------------------------------
     private void loadFile() {
-        File file = selectFile();
+        File file = selectFile(R.strings.OPEN);
         if(file == null)
             return;
 
         try {
-        toyIdeWindow.textEditor.loadFile(file);
+        toyIdeWindow.getTextEditor().loadFile(file);
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
     }
 
+    // -----------------------------------------------------------------------------------------------------------------
     private void saveFile() {
-        File file = toyIdeWindow.textEditor.getCurrentFile();
+        File file = toyIdeWindow.getTextEditor().getCurrentFile();
         if(file == null)
-            file = selectFile();
+            file = selectFile(R.strings.SAVE);
 
         if(file == null)
             return;
 
-        toyIdeWindow.textEditor.saveFile(file);
+        toyIdeWindow.getTextEditor().saveFile(file);
     }
 
+    // -----------------------------------------------------------------------------------------------------------------
     private void saveFileAs() {
-        File file = selectFile();
+        File file = selectFile(R.strings.SAVE);
         if(file == null)
             return;
 
-        toyIdeWindow.textEditor.saveFile(file);
+        toyIdeWindow.getTextEditor().saveFile(file);
     }
 
+    // -----------------------------------------------------------------------------------------------------------------
     private void newFile() {
-        toyIdeWindow.textEditor.newFile();
+        toyIdeWindow.getTextEditor().newFile();
     }
 
+    // -----------------------------------------------------------------------------------------------------------------
     private boolean compile() {
-        return ToyCompiler.compile(toyIdeWindow.textEditor.getCurrentFile());
+        return ToyCompiler.compile(toyIdeWindow.getTextEditor().getCurrentFile());
     }
 
-    private void run() {
-        Toy toy = new SToy();
+    // -----------------------------------------------------------------------------------------------------------------
+    private void start() {
+        toyIdeWindow.getCpu().reset();
 
-        String dst = Utils.fileNameAsmToToy(toyIdeWindow.textEditor.getCurrentFile().getAbsolutePath());
+        String dst = Utils.fileNameAsmToToy(toyIdeWindow.getTextEditor().getCurrentFile().getAbsolutePath());
         if(dst == null)
             return;
-        toy.load(dst);
 
-        while(toy.step())
-            toy.print();
-        toy.print();
+        toyIdeWindow.getCpu().load(dst);
+        toyIdeWindow.getCpu().start();
+    }
 
+    // -----------------------------------------------------------------------------------------------------------------
+    private void step() {
+        toyIdeWindow.getCpu().step();
+    }
+
+    // -----------------------------------------------------------------------------------------------------------------
+    private void run() {
+        toyIdeWindow.getCpu().run();
         Log.out.println("Toy Has finished executing.");
     }
 

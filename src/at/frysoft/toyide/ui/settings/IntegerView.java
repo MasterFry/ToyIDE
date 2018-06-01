@@ -1,6 +1,6 @@
 package at.frysoft.toyide.ui.settings;
 
-import at.frysoft.toyide.settings.SettingInteger;
+import at.frysoft.toyide.ressources.settings.SettingInteger;
 
 import javax.swing.*;
 import java.awt.*;

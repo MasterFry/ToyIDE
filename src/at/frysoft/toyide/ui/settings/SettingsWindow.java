@@ -1,13 +1,12 @@
 package at.frysoft.toyide.ui.settings;
 
-import at.frysoft.toyide.Main;
-import at.frysoft.toyide.settings.Setting;
-import at.frysoft.toyide.settings.SettingInteger;
-import at.frysoft.toyide.settings.SettingString;
-import at.frysoft.toyide.settings.Settings;
+import at.frysoft.toyide.ressources.R;
+import at.frysoft.toyide.ressources.settings.Setting;
+import at.frysoft.toyide.ressources.settings.SettingInteger;
+import at.frysoft.toyide.ressources.settings.SettingString;
+import at.frysoft.toyide.ressources.settings.Settings;
 
 import javax.swing.*;
-import javax.swing.border.Border;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -24,8 +23,8 @@ import java.awt.event.WindowListener;
 public class SettingsWindow extends JFrame implements ActionListener, WindowListener {
 
     private static final String BUTTON_OK = "OK";
-    private static final String BUTTON_CANCEL = "CANCEL";
-    private static final String BUTTON_APPLY = "APPLY";
+    private static final String BUTTON_CANCEL = "Cancel";
+    private static final String BUTTON_APPLY = "Apply";
 
     private Window parent;
 
@@ -55,7 +54,7 @@ public class SettingsWindow extends JFrame implements ActionListener, WindowList
         gbc.weightx = 1.0f;
         gbc.insets = new Insets(1, 5, 1, 5);
 
-        for(Setting setting : Settings.getSettings()) {
+        for(Setting setting : R.settings.getSettings()) {
             settingsPanel.add(createSettingView(setting), gbc);
             ++gbc.gridy;
         }

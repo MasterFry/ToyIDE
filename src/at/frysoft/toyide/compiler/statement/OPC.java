@@ -1,6 +1,6 @@
 package at.frysoft.toyide.compiler.statement;
 
-import at.frysoft.toyide.Strings;
+import at.frysoft.toyide.ressources.R;
 import at.frysoft.toyide.toy.Instruction;
 
 /**
@@ -21,30 +21,30 @@ public class OPC {
         this.name = name;
     }
 
-    public static final OPC HLT = new OPC(Instruction.HLT, Strings.INSTRUCTION_HLT);
-    public static final OPC ADD = new OPC(Instruction.ADD, Strings.INSTRUCTION_ADD);
-    public static final OPC SUB = new OPC(Instruction.SUB, Strings.INSTRUCTION_SUB);
-    public static final OPC AND = new OPC(Instruction.AND, Strings.INSTRUCTION_AND);
-    public static final OPC XOR = new OPC(Instruction.XOR, Strings.INSTRUCTION_XOR);
-    public static final OPC SHL = new OPC(Instruction.SHL, Strings.INSTRUCTION_SHL);
-    public static final OPC SHR = new OPC(Instruction.SHR, Strings.INSTRUCTION_SHR);
-    public static final OPC LDA = new OPC(Instruction.LDA, Strings.INSTRUCTION_LDA);
-    public static final OPC LD  = new OPC(Instruction.LD , Strings.INSTRUCTION_LD );
-    public static final OPC ST  = new OPC(Instruction.ST , Strings.INSTRUCTION_ST );
-    public static final OPC LDI = new OPC(Instruction.LDI, Strings.INSTRUCTION_LDI);
-    public static final OPC STI = new OPC(Instruction.STI, Strings.INSTRUCTION_STI);
-    public static final OPC BZ  = new OPC(Instruction.BZ , Strings.INSTRUCTION_BZ );
-    public static final OPC BP  = new OPC(Instruction.BP , Strings.INSTRUCTION_BP );
-    public static final OPC JR  = new OPC(Instruction.JR , Strings.INSTRUCTION_JR );
-    public static final OPC JL  = new OPC(Instruction.JL , Strings.INSTRUCTION_JL );
+    public static final OPC HLT = new OPC(Instruction.HLT, R.strings.toy.instruction.HLT);
+    public static final OPC ADD = new OPC(Instruction.ADD, R.strings.toy.instruction.ADD);
+    public static final OPC SUB = new OPC(Instruction.SUB, R.strings.toy.instruction.SUB);
+    public static final OPC AND = new OPC(Instruction.AND, R.strings.toy.instruction.AND);
+    public static final OPC XOR = new OPC(Instruction.XOR, R.strings.toy.instruction.XOR);
+    public static final OPC SHL = new OPC(Instruction.SHL, R.strings.toy.instruction.SHL);
+    public static final OPC SHR = new OPC(Instruction.SHR, R.strings.toy.instruction.SHR);
+    public static final OPC LDA = new OPC(Instruction.LDA, R.strings.toy.instruction.LDA);
+    public static final OPC LD  = new OPC(Instruction.LD , R.strings.toy.instruction.LD );
+    public static final OPC ST  = new OPC(Instruction.ST , R.strings.toy.instruction.ST );
+    public static final OPC LDI = new OPC(Instruction.LDI, R.strings.toy.instruction.LDI);
+    public static final OPC STI = new OPC(Instruction.STI, R.strings.toy.instruction.STI);
+    public static final OPC BZ  = new OPC(Instruction.BZ , R.strings.toy.instruction.BZ );
+    public static final OPC BP  = new OPC(Instruction.BP , R.strings.toy.instruction.BP );
+    public static final OPC JR  = new OPC(Instruction.JR , R.strings.toy.instruction.JR );
+    public static final OPC JL  = new OPC(Instruction.JL , R.strings.toy.instruction.JL );
 
-    public static final OPC PUSH = new OPC(Instruction.PUSH, Strings.INSTRUCTION_PUSH);
-    public static final OPC POP  = new OPC(Instruction.POP , Strings.INSTRUCTION_POP );
-    public static final OPC CALL = new OPC(Instruction.CALL, Strings.INSTRUCTION_CALL);
-    public static final OPC RET  = new OPC(Instruction.RET , Strings.INSTRUCTION_RET );
+    public static final OPC PUSH = new OPC(Instruction.PUSH, R.strings.toy.instruction.PUSH);
+    public static final OPC POP  = new OPC(Instruction.POP , R.strings.toy.instruction.POP );
+    public static final OPC CALL = new OPC(Instruction.CALL, R.strings.toy.instruction.CALL);
+    public static final OPC RET  = new OPC(Instruction.RET , R.strings.toy.instruction.RET );
 
-    public static final OPC ORG = new OPC(0, Strings.COMPILER_INSTRUCTION_ORG);
-    public static final OPC DW  = new OPC(0, Strings.COMPILER_INSTRUCTION_DW );
-    public static final OPC DUP = new OPC(0, Strings.COMPILER_INSTRUCTION_DUP);
+    public static final OPC ORG = new OPC(0, R.strings.compiler.instruction.ORG);
+    public static final OPC DW  = new OPC(0, R.strings.compiler.instruction.DW );
+    public static final OPC DUP = new OPC(0, R.strings.compiler.instruction.DUP);
 
 }

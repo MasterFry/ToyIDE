@@ -1,15 +1,13 @@
 package at.frysoft.toyide.compiler;
 
 import at.frysoft.toyide.Log;
-import at.frysoft.toyide.Strings;
 import at.frysoft.toyide.Utils;
 import at.frysoft.toyide.compiler.statement.OPC;
 import at.frysoft.toyide.compiler.statement.Statement;
+import at.frysoft.toyide.ressources.R;
 
 import java.io.*;
 import java.util.Vector;
-
-import static at.frysoft.toyide.Strings.COMPILER_COMPILING_FILE;
 
 /**
  * Created on : 26.05.2018
@@ -34,10 +32,10 @@ public class ToyCompiler {
         String src = srcFile.getAbsolutePath();
 
         setPrefix();
-        Log.out.println(COMPILER_COMPILING_FILE + src);
+        Log.out.println(R.strings.compiler.COMPILING_FILE(srcFile.getName()));
 
         if(!srcFile.exists() || srcFile.isDirectory()) {
-            Log.err.println(Strings.FILE_NOT_EXIST_OR_DIR);
+            Log.err.println(R.strings.file.NOT_EXIST_OR_IS_DIR);
             return false;
         }
 
@@ -47,7 +45,7 @@ public class ToyCompiler {
 
         File dstFile = new File(dst);
         if(dstFile.isDirectory()) {
-            Log.err.println(Strings.COMPILER_OUTFILE_IS_DIR);
+            Log.err.println(R.strings.file.OUT_IS_DIR);
             return false;
         }
 
@@ -62,17 +60,17 @@ public class ToyCompiler {
 
     public static boolean compile(String src, String dst) {
         setPrefix();
-        Log.out.println(COMPILER_COMPILING_FILE + src);
+        Log.out.println(R.strings.compiler.COMPILING_FILE(src));
 
         File srcFile = new File(src);
         if(!srcFile.exists() || srcFile.isDirectory()) {
-            Log.err.println(Strings.FILE_NOT_EXIST_OR_DIR);
+            Log.err.println(R.strings.file.NOT_EXIST_OR_IS_DIR);
             return false;
         }
 
         File dstFile = new File(dst);
         if(dstFile.isDirectory()) {
-            Log.err.println(Strings.COMPILER_OUTFILE_IS_DIR);
+            Log.err.println(R.strings.file.OUT_IS_DIR);
             return false;
         }
 
@@ -119,8 +117,7 @@ public class ToyCompiler {
             return false;
 
         } catch (SyntaxException ex) {
-            Log.err.println(String.format(Strings.COMPILER_SYNTAX_ERROR, ex.getMessage()) +
-                                    String.format(Strings.COMPILER_ON_LINE, currentLine, line));
+            Log.err.println(R.strings.compiler.SYNTAX_ERROR(ex.getMessage(), currentLine, line));
             error = true;
         }
 
@@ -153,9 +150,8 @@ public class ToyCompiler {
             if(stmt.hasAddressParam()) {
                 try {
                     linker.link(stmt);
-                } catch (SymbolicLinkNotFoundException ex) {
-                    Log.err.println(Strings.COMPILER_NO_SYMBOLIC_LINK +
-                                    String.format(Strings.COMPILER_ON_LINE, stmt.getLineIndex(), ex.getMessage()));
+                } catch (LinkerException ex) {
+                    Log.err.println(R.strings.compiler.LINKER_ERROR(ex.getMessage(), stmt.getLineIndex(), line));
                 }
             }
         }
@@ -195,7 +191,7 @@ public class ToyCompiler {
             return false;
         }
 
-        Log.out.println(Strings.COMPILER_FILE_COMPILED_TO + dstFile.getAbsolutePath());
+        Log.out.println(R.strings.compiler.COMPILED_FILE(dstFile.getName()));
 
         return true;
     }

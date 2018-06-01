@@ -69,8 +69,6 @@ public class Log {
             if(console != null) {
                 console.addText(string, null);
             }
-            System.out.print(string);
-            System.out.flush();
         }
 
     }
@@ -85,8 +83,6 @@ public class Log {
             if(console != null) {
                 console.addText(string, console.styleColorRed);
             }
-            System.err.print(string);
-            System.err.flush();
         }
 
     }

@@ -1,5 +1,7 @@
 package at.frysoft.toyide;
 
+import at.frysoft.toyide.ressources.R;
+
 /**
  * Created by Stefan on 20.05.2018.
  */
@@ -35,7 +37,7 @@ public class Utils {
 
     public static String fileNameAsmToToy(String asmFileName) {
         if(!asmFileName.endsWith(".asm")) {
-            Log.err.println(Strings.FILE_NOT_ASM_FILE);
+            Log.err.println(R.strings.file.NOT_ASM_FILE);
             return null;
         }
         return asmFileName.substring(0, asmFileName.length() - 4) + ".toy";

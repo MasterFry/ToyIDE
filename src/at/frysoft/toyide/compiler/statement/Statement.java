@@ -1,7 +1,7 @@
 package at.frysoft.toyide.compiler.statement;
 
-import at.frysoft.toyide.Strings;
 import at.frysoft.toyide.compiler.SyntaxException;
+import at.frysoft.toyide.ressources.R;
 
 /**
  * Created on : 26.05.2018
@@ -116,13 +116,13 @@ public class Statement {
     public static Statement create(String name, boolean link) throws SyntaxException {
         switch(name) {
 
-            case Strings.INSTRUCTION_HLT:
+            case R.strings.toy.instruction.HLT:
                 return new Statement(
                         OPC.HLT,
                         link
                 );
 
-            case Strings.INSTRUCTION_ADD:
+            case R.strings.toy.instruction.ADD:
                 return new Statement(
                         OPC.ADD,
                         link,
@@ -131,7 +131,7 @@ public class Statement {
                         new Register(Param.POS_T)
                 );
 
-            case Strings.INSTRUCTION_SUB:
+            case R.strings.toy.instruction.SUB:
                 return new Statement(
                         OPC.SUB,
                         link,
@@ -140,7 +140,7 @@ public class Statement {
                         new Register(Param.POS_T)
                 );
 
-            case Strings.INSTRUCTION_AND:
+            case R.strings.toy.instruction.AND:
                 return new Statement(
                         OPC.AND,
                         link,
@@ -149,7 +149,7 @@ public class Statement {
                         new Register(Param.POS_T)
                 );
 
-            case Strings.INSTRUCTION_XOR:
+            case R.strings.toy.instruction.XOR:
                 return new Statement(
                         OPC.XOR,
                         link,
@@ -158,7 +158,7 @@ public class Statement {
                         new Register(Param.POS_T)
                 );
 
-            case Strings.INSTRUCTION_SHL:
+            case R.strings.toy.instruction.SHL:
                 return new Statement(
                         OPC.SHL,
                         link,
@@ -167,7 +167,7 @@ public class Statement {
                         new Register(Param.POS_T)
                 );
 
-            case Strings.INSTRUCTION_SHR:
+            case R.strings.toy.instruction.SHR:
                 return new Statement(
                         OPC.SHR,
                         link,
@@ -176,7 +176,7 @@ public class Statement {
                         new Register(Param.POS_T)
                 );
 
-            case Strings.INSTRUCTION_LDA:
+            case R.strings.toy.instruction.LDA:
                 return new Statement(
                         OPC.LDA,
                         link,
@@ -184,7 +184,7 @@ public class Statement {
                         new Address()
                 );
 
-            case Strings.INSTRUCTION_LD :
+            case R.strings.toy.instruction.LD :
                 return new Statement(
                         OPC.LD,
                         link,
@@ -192,7 +192,7 @@ public class Statement {
                         new Address()
                 );
 
-            case Strings.INSTRUCTION_ST :
+            case R.strings.toy.instruction.ST :
                 return new Statement(
                         OPC.ST,
                         link,
@@ -200,25 +200,25 @@ public class Statement {
                         new Address()
                 );
 
-            case Strings.INSTRUCTION_LDI:
+            case R.strings.toy.instruction.LDI:
                 return new Statement(
                         OPC.LDI,
                         link,
                         new Register(Param.POS_D),
                         new Number(Param.POS_S),
-                        new Address()
+                        new Register(Param.POS_T)
                 );
 
-            case Strings.INSTRUCTION_STI:
+            case R.strings.toy.instruction.STI:
                 return new Statement(
                         OPC.STI,
                         link,
                         new Register(Param.POS_D),
                         new Number(Param.POS_S),
-                        new Address()
+                        new Register(Param.POS_T)
                 );
 
-            case Strings.INSTRUCTION_BZ:
+            case R.strings.toy.instruction.BZ:
                 return new Statement(
                         OPC.BZ,
                         link,
@@ -226,7 +226,7 @@ public class Statement {
                         new Address()
                 );
 
-            case Strings.INSTRUCTION_BP:
+            case R.strings.toy.instruction.BP:
                 return new Statement(
                         OPC.BP,
                         link,
@@ -234,14 +234,14 @@ public class Statement {
                         new Address()
                 );
 
-            case Strings.INSTRUCTION_JR:
+            case R.strings.toy.instruction.JR:
                 return new Statement(
                         OPC.JR,
                         link,
                         new Register(Param.POS_D)
                 );
 
-            case Strings.INSTRUCTION_JL:
+            case R.strings.toy.instruction.JL:
                 return new Statement(
                         OPC.JL,
                         link,
@@ -249,54 +249,54 @@ public class Statement {
                         new Address()
                 );
 
-            case Strings.INSTRUCTION_PUSH:
+            case R.strings.toy.instruction.PUSH:
                 return new Statement(
                         OPC.PUSH,
                         link,
                         new Register(Param.POS_T)
                 );
 
-            case Strings.INSTRUCTION_POP :
+            case R.strings.toy.instruction.POP :
                 return new Statement(
                         OPC.POP,
                         link,
                         new Register(Param.POS_T)
                 );
 
-            case Strings.INSTRUCTION_CALL:
+            case R.strings.toy.instruction.CALL:
                 return new Statement(
                         OPC.CALL,
                         link,
                         new Address()
                 );
 
-            case Strings.INSTRUCTION_RET:
+            case R.strings.toy.instruction.RET:
                 return new Statement(
                         OPC.RET,
                         link
                 );
 
-            case Strings.COMPILER_INSTRUCTION_ORG:
+            case R.strings.compiler.instruction.ORG:
                 if(link)
-                    throw new SyntaxException("ORG must not have a symbolic link!");
+                    throw new SyntaxException(R.strings.compiler.ORG_MUST_NOT_HAVE_LINK);
                 return new Statement(
                         OPC.ORG,
                         link,
                         new Number(Param.POS_IMM)
                 );
 
-            case Strings.COMPILER_INSTRUCTION_DW :
+            case R.strings.compiler.instruction.DW :
                 if(!link)
-                    throw new SyntaxException("DW and DUP must have a symbolic link!");
+                    throw new SyntaxException(R.strings.compiler.DW_MUST_HAVE_LINK);
                 return new Statement(
                         OPC.DW,
                         true,
                         new Number(Param.POS_IMM)
                 );
 
-            case Strings.COMPILER_INSTRUCTION_DUP:
+            case R.strings.compiler.instruction.DUP:
                 if(!link)
-                    throw new SyntaxException("DW and DUP must have a symbolic link!");
+                    throw new SyntaxException(R.strings.compiler.DUP_MUST_HAVE_LINK);
                 return new Statement(
                         OPC.DUP,
                         true,

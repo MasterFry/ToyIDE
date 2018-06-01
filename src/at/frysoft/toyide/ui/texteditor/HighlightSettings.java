@@ -1,6 +1,7 @@
 package at.frysoft.toyide.ui.texteditor;
 
-import at.frysoft.toyide.Strings;
+import at.frysoft.toyide.ressources.R;
+import at.frysoft.toyide.ressources.settings.Settings;
 
 import javax.swing.text.Style;
 import javax.swing.text.StyleConstants;
@@ -48,9 +49,8 @@ public class HighlightSettings {
 
         // Default Style
         defaultStyle = styleContext.addStyle("DEFAULT", null);
-        //defaultStyle.addAttribute(StyleConstants.FontFamily, "Consolas");
-        StyleConstants.setFontFamily(defaultStyle, "Monospaced");
-        StyleConstants.setFontSize(defaultStyle, 12);
+        StyleConstants.setFontFamily(defaultStyle, R.settings.getString(R.settings.FONT_FAMILY));
+        StyleConstants.setFontSize(defaultStyle, R.settings.getInt(R.settings.FONT_SIZE));
         StyleConstants.setBold(defaultStyle, false);
         StyleConstants.setItalic(defaultStyle, false);
         DEFAULT_STYLE = settings.addStyle(defaultStyle);
@@ -77,9 +77,9 @@ public class HighlightSettings {
         StyleConstants.setBold(style, true);
         kwg = new KeywordGroup(style);
         kwg.setKeywords(
-                Strings.COMPILER_INSTRUCTION_ORG,
-                Strings.COMPILER_INSTRUCTION_DW,
-                Strings.COMPILER_INSTRUCTION_DUP
+                R.strings.compiler.instruction.ORG,
+                R.strings.compiler.instruction.DW,
+                R.strings.compiler.instruction.DUP
         );
         settings.addKeywordGroup(kwg);
 
@@ -89,22 +89,27 @@ public class HighlightSettings {
         StyleConstants.setBold(style, true);
         kwg = new KeywordGroup(style);
         kwg.setKeywords(
-                Strings.INSTRUCTION_HLT,
-                Strings.INSTRUCTION_ADD,
-                Strings.INSTRUCTION_SUB,
-                Strings.INSTRUCTION_AND,
-                Strings.INSTRUCTION_XOR,
-                Strings.INSTRUCTION_SHL,
-                Strings.INSTRUCTION_SHR,
-                Strings.INSTRUCTION_LDA,
-                Strings.INSTRUCTION_LD,
-                Strings.INSTRUCTION_ST,
-                Strings.INSTRUCTION_LDI,
-                Strings.INSTRUCTION_STI,
-                Strings.INSTRUCTION_BZ,
-                Strings.INSTRUCTION_BP,
-                Strings.INSTRUCTION_JR,
-                Strings.INSTRUCTION_JL
+                R.strings.toy.instruction.HLT,
+                R.strings.toy.instruction.ADD,
+                R.strings.toy.instruction.SUB,
+                R.strings.toy.instruction.AND,
+                R.strings.toy.instruction.XOR,
+                R.strings.toy.instruction.SHL,
+                R.strings.toy.instruction.SHR,
+                R.strings.toy.instruction.LDA,
+                R.strings.toy.instruction.LD,
+                R.strings.toy.instruction.ST,
+                R.strings.toy.instruction.LDI,
+                R.strings.toy.instruction.STI,
+                R.strings.toy.instruction.BZ,
+                R.strings.toy.instruction.BP,
+                R.strings.toy.instruction.JR,
+                R.strings.toy.instruction.JL,
+
+                R.strings.toy.instruction.PUSH,
+                R.strings.toy.instruction.POP,
+                R.strings.toy.instruction.CALL,
+                R.strings.toy.instruction.RET
         );
         settings.addKeywordGroup(kwg);
 
@@ -113,7 +118,7 @@ public class HighlightSettings {
         style.addAttribute(StyleConstants.Foreground, Color.GREEN.darker());
         StyleConstants.setBold(style, true);
         kwg = new KeywordGroup(style);
-        kwg.setKeywords(Strings.REGISTER_NAMES);
+        kwg.setKeywords(R.strings.toy.REGISTER_NAMES);
         settings.addKeywordGroup(kwg);
 
         return settings;

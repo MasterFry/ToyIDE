@@ -30,6 +30,7 @@ public class SToy extends Toy {
 
             case Instruction.CALL:
                 register.write(SP, register.read(SP) - 1);
+                register.write(BP, register.read(SP));
                 memory.write(register.read(SP), pc.get());
                 pc.set(instr.getImm());
                 return;

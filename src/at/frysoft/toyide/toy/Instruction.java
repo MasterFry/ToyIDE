@@ -1,6 +1,6 @@
 package at.frysoft.toyide.toy;
 
-import at.frysoft.toyide.Strings;
+import at.frysoft.toyide.ressources.R;
 
 public class Instruction {
 
@@ -30,6 +30,12 @@ public class Instruction {
 
     public Instruction() {
         instruction = HLT;
+    }
+
+    public Instruction copy() {
+        Instruction i = new Instruction();
+        i.instruction = instruction;
+        return i;
     }
 
     public void set(int instruction) {
@@ -69,29 +75,66 @@ public class Instruction {
             case HLT:
                 // Switch for S-Toy Instructions
                 switch(getRd()) {
-                    case PUSH: return Strings.INSTRUCTION_PUSH;
-                    case POP : return Strings.INSTRUCTION_POP ;
-                    case CALL: return Strings.INSTRUCTION_CALL;
-                    case RET : return Strings.INSTRUCTION_RET ;
+                    case PUSH: return R.strings.toy.instruction.PUSH;
+                    case POP : return R.strings.toy.instruction.POP ;
+                    case CALL: return R.strings.toy.instruction.CALL;
+                    case RET : return R.strings.toy.instruction.RET ;
                 }
                 // Standard Toy Instructions
-                return Strings.INSTRUCTION_HLT;
+                return R.strings.toy.instruction.HLT;
 
-            case ADD: return Strings.INSTRUCTION_ADD;
-            case SUB: return Strings.INSTRUCTION_SUB;
-            case AND: return Strings.INSTRUCTION_AND;
-            case XOR: return Strings.INSTRUCTION_XOR;
-            case SHL: return Strings.INSTRUCTION_SHL;
-            case SHR: return Strings.INSTRUCTION_SHR;
-            case LDA: return Strings.INSTRUCTION_LDA;
-            case LD : return Strings.INSTRUCTION_LD ;
-            case ST : return Strings.INSTRUCTION_ST ;
-            case LDI: return Strings.INSTRUCTION_LDI;
-            case STI: return Strings.INSTRUCTION_STI;
-            case BZ : return Strings.INSTRUCTION_BZ ;
-            case BP : return Strings.INSTRUCTION_BP ;
-            case JR : return Strings.INSTRUCTION_JR ;
-            case JL : return Strings.INSTRUCTION_JL ;
+            case ADD: return R.strings.toy.instruction.ADD;
+            case SUB: return R.strings.toy.instruction.SUB;
+            case AND: return R.strings.toy.instruction.AND;
+            case XOR: return R.strings.toy.instruction.XOR;
+            case SHL: return R.strings.toy.instruction.SHL;
+            case SHR: return R.strings.toy.instruction.SHR;
+            case LDA: return R.strings.toy.instruction.LDA;
+            case LD : return R.strings.toy.instruction.LD ;
+            case ST : return R.strings.toy.instruction.ST ;
+            case LDI: return R.strings.toy.instruction.LDI;
+            case STI: return R.strings.toy.instruction.STI;
+            case BZ : return R.strings.toy.instruction.BZ ;
+            case BP : return R.strings.toy.instruction.BP ;
+            case JR : return R.strings.toy.instruction.JR ;
+            case JL : return R.strings.toy.instruction.JL ;
+            default:
+                throw new IllegalArgumentException("Invalid Instruction");
+        }
+    }
+
+    public String getDescription() {
+        switch(getOPC()) {
+
+            case Instruction.HLT:
+                // Switch for S-Toy Instructions
+                switch(getRd()) {
+                    case PUSH: return "PUSH: ++SP and Rd => Mem[SP]";
+                    case POP : return "POP: Rd <= Mem[SP] and ++SP";
+                    case CALL: return "CALL: Push PC, BP = PC and imm => PC";
+                    case RET : return "RET: Pop => PC";
+                }
+                // Standard Toy Instructions
+                return "CPU is Halted!";
+
+            case ADD: return String.format("ADD: R%1X <= R%1X + R%1X", getRd(), getRs(), getRt());
+            case SUB: return String.format("SUB: R%1X <= R%1X - R%1X", getRd(), getRs(), getRt());
+            case AND: return String.format("AND: R%1X <= R%1X & R%1X", getRd(), getRs(), getRt());
+            case XOR: return String.format("XOR: R%1X <= R%1X ^ R%1X", getRd(), getRs(), getRt());
+            case SHL: return String.format("SHL: R%1X <= R%1X << R%1X", getRd(), getRs(), getRt());
+            case SHR: return String.format("SHR: R%1X <= R%1X >> R%1X", getRd(), getRs(), getRt());
+
+            case LDA: return String.format("LDA: R%1X <= 0x%02X", getRd(), getImm());
+            case LD : return String.format("LD: R%1X <= Mem[0x%02X]", getRd(), getImm());
+            case ST : return String.format("ST: R%1X => Mem[0x%02X]", getRd(), getImm());
+            case LDI: return String.format("LDI: R%1X <= Mem[0x%1X + R%1X]", getRd(), getRs(), getRt());
+            case STI: return String.format("STI: R%1X => Mem[0x%1X + R%1X]", getRd(), getRs(), getRt());
+
+            case BZ : return "BZ: if Rd == 0 then imm => PC";
+            case BP : return "BP: if Rd > 0 then imm => PC";
+            case JR : return "JR: Rd => PC";
+            case JL : return "JL: Rd <= PC and imm => PC";
+
             default:
                 throw new IllegalArgumentException("Invalid Instruction");
         }
