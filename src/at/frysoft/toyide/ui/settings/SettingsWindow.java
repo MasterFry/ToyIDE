@@ -1,10 +1,8 @@
 package at.frysoft.toyide.ui.settings;
 
+import at.frysoft.toyide.Log;
 import at.frysoft.toyide.ressources.R;
-import at.frysoft.toyide.ressources.settings.Setting;
-import at.frysoft.toyide.ressources.settings.SettingInteger;
-import at.frysoft.toyide.ressources.settings.SettingString;
-import at.frysoft.toyide.ressources.settings.Settings;
+import at.frysoft.toyide.ressources.settings.*;
 
 import javax.swing.*;
 import java.awt.*;
@@ -27,6 +25,8 @@ public class SettingsWindow extends JFrame implements ActionListener, WindowList
     private static final String BUTTON_APPLY = "Apply";
 
     private Window parent;
+
+    private SettingView[] settingViews;
 
     public SettingsWindow(Window parent) {
         super("Toy IDE Settings");
@@ -54,8 +54,12 @@ public class SettingsWindow extends JFrame implements ActionListener, WindowList
         gbc.weightx = 1.0f;
         gbc.insets = new Insets(1, 5, 1, 5);
 
-        for(Setting setting : R.settings.getSettings()) {
-            settingsPanel.add(createSettingView(setting), gbc);
+        Setting[] settings = R.settings.getSettings();
+        settingViews = new SettingView[settings.length];
+
+        for(int i = 0; i < settings.length; ++i) {
+            settingViews[i] = createSettingView(settings[i]);
+            settingsPanel.add(settingViews[i], gbc);
             ++gbc.gridy;
         }
 
@@ -92,11 +96,12 @@ public class SettingsWindow extends JFrame implements ActionListener, WindowList
 
             case BUTTON_OK:
                 applySettings();
-                break;
-
+                // No break.
             case BUTTON_CANCEL:
                 setVisible(false);
                 dispose();
+                parent.setEnabled(true);
+                parent.requestFocus();
                 break;
 
             case BUTTON_APPLY:
@@ -112,8 +117,8 @@ public class SettingsWindow extends JFrame implements ActionListener, WindowList
 
     @Override
     public void windowClosing(WindowEvent e) {
-        parent.setFocusable(true);
         parent.setEnabled(true);
+        parent.requestFocus();
     }
 
     @Override
@@ -137,15 +142,27 @@ public class SettingsWindow extends JFrame implements ActionListener, WindowList
     }
 
     private void applySettings() {
+        for(SettingView v : settingViews) {
+            try {
+                R.settings.set(v.getSettingId(), v.getSettingValue());
+            } catch (InvalidInputException e) {
+                Log.err.println("Invalid setting for " + v.getSettingId().name);
+            }
+        }
 
+        R.settings.saveSettings();
     }
 
-    private JPanel createSettingView(Setting setting) {
+    private SettingView createSettingView(Setting setting) {
         if(setting instanceof SettingString) {
             return new StringView((SettingString) setting);
 
         }else if(setting instanceof SettingInteger) {
             return new IntegerView((SettingInteger) setting);
+
+        }else if(setting instanceof SettingColor) {
+            return new ColorView((SettingColor) setting);
+
         }
 
         return null;

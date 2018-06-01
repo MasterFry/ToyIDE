@@ -1,10 +1,12 @@
 package at.frysoft.toyide.ressources.settings;
 
+import at.frysoft.toyide.Log;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import com.sun.javaws.exceptions.InvalidArgumentException;
+
 import java.awt.*;
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.util.Vector;
 
 /**
@@ -79,13 +81,16 @@ public class Settings {
 
     public void saveSettings() {
         try {
-            FileWriter fw = new FileWriter(get(WORKSPACE) + "settings.txt");
+            JsonWriter jw = new JsonWriter(new FileWriter("settings.json"));
+            jw.setIndent("    ");
+            jw.beginObject();
 
             for(Setting setting : settings.settings) {
-                fw.write(setting.toString() + '\n');
+                setting.write(jw);
             }
 
-            fw.close();
+            jw.endObject();
+            jw.close();
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -94,20 +99,33 @@ public class Settings {
 
     public void loadSettings() {
         try {
-            BufferedReader br = new BufferedReader(new FileReader(get(WORKSPACE) + "settings.txt"));
-            String line;
-            String[] r;
+            JsonReader jr = new JsonReader(new FileReader("settings.json"));
+            jr.beginObject();
 
-            while((line = br.readLine()) != null) {
-                r = line.split("=", 2);
-                settings.set(r[0], r[1]);
+            boolean read;
+            String name;
+            Setting[] settings = getSettings();
+
+            while(jr.hasNext()) {
+                name = jr.nextName();
+                read = false;
+
+                for(Setting setting : settings) {
+                    if(setting.id.name.equals(name)) {
+                        read = true;
+                        setting.read(jr);
+                        break;
+                    }
+                }
+
+                if(!read)
+                    throw new IllegalArgumentException("Invalid Setting: " + name);
             }
 
-            br.close();
+            jr.endObject();
+            jr.close();
 
         } catch (IOException ex) {
-            ex.printStackTrace();
-        } catch(SettingsException ex) {
             ex.printStackTrace();
         }
     }
@@ -131,16 +149,6 @@ public class Settings {
 
         private void set(SettingId id, Object value) throws SettingsException {
             settings.get(id.index).set(value);
-        }
-
-        private void set(String name, String value) throws SettingsException {
-            for(Setting setting : settings) {
-                if(setting.name.equals(name)) {
-                    setting.set(value);
-                    return;
-                }
-            }
-            throw new SettingsException("Invalid Setting: " + name);
         }
 
         private Setting[] getSettings() {

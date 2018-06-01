@@ -1,5 +1,10 @@
 package at.frysoft.toyide.ressources.settings;
 
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+
+import java.io.IOException;
+
 /**
  * Created on : 26.05.2018
  * Last update: 26.05.2018
@@ -11,8 +16,8 @@ public class SettingString extends Setting {
 
     private String value;
 
-    protected SettingString(String name, String value) {
-        super(name);
+    protected SettingString(SettingId id, String value) {
+        super(id);
         this.value = value;
     }
 
@@ -24,13 +29,13 @@ public class SettingString extends Setting {
     }
 
     @Override
-    public void set(String s) throws SettingsException {
-        value = s;
+    public void write(JsonWriter writer) throws IOException {
+        writer.name(id.name).value(value);
     }
 
     @Override
-    public String toString() {
-        return (name + "=" + value);
+    public void read(JsonReader reader) throws IOException {
+        value = reader.nextString();
     }
 
     public void setValue(String value) {

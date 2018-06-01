@@ -13,7 +13,7 @@ public class SettingId {
 
     protected int index;
 
-    protected final String name;
+    public final String name;
 
     protected final Object defaultValue;
 
@@ -21,6 +21,11 @@ public class SettingId {
         this.index = 0;
         this.name = name;
         this.defaultValue = defaultValue;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        return (o instanceof SettingId && ((SettingId) o).index == index);
     }
 
     public int getIndex() {
@@ -32,9 +37,9 @@ public class SettingId {
     }
 
     public Setting createSetting(Object value) {
-        if(value instanceof Integer) return new SettingInteger(name, (int) value);
-        if(value instanceof String)  return new SettingString (name, (String) value);
-        if(value instanceof Color)   return new SettingColor  (name, (Color) value);
+        if(value instanceof Integer) return new SettingInteger(this, (int) value);
+        if(value instanceof String)  return new SettingString (this, (String) value);
+        if(value instanceof Color)   return new SettingColor  (this, (Color) value);
         return null;
     }
 

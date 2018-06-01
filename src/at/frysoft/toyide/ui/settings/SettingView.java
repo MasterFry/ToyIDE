@@ -1,5 +1,7 @@
 package at.frysoft.toyide.ui.settings;
 
+import at.frysoft.toyide.ressources.settings.SettingId;
+
 import javax.swing.*;
 
 /**
@@ -11,7 +13,7 @@ import javax.swing.*;
  */
 public abstract class SettingView extends JPanel {
 
-    public abstract String getSettingName();
+    public abstract SettingId getSettingId();
 
     public abstract Object getSettingValue() throws InvalidInputException;
 

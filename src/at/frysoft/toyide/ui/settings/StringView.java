@@ -1,5 +1,6 @@
 package at.frysoft.toyide.ui.settings;
 
+import at.frysoft.toyide.ressources.settings.SettingId;
 import at.frysoft.toyide.ressources.settings.SettingString;
 
 import javax.swing.*;
@@ -30,19 +31,20 @@ public class StringView extends SettingView {
 
         gbc.gridx = 0;
         gbc.gridwidth = 1;
-        add(new JLabel(setting.name), gbc);
+        add(new JLabel(setting.id.name), gbc);
 
         gbc.gridx = 1;
         gbc.gridwidth = 3;
         textField = new JTextField(setting.getValue());
+        textField.setHorizontalAlignment(JTextField.RIGHT);
         add(textField, gbc);
 
         setVisible(true);
     }
 
     @Override
-    public String getSettingName() {
-        return setting.name;
+    public SettingId getSettingId() {
+        return setting.id;
     }
 
     @Override

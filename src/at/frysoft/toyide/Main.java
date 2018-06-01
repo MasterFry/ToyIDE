@@ -4,6 +4,7 @@ import at.frysoft.toyide.ressources.R;
 import at.frysoft.toyide.ui.ToyIdeWindow;
 
 import javax.swing.*;
+import java.io.File;
 
 public class Main {
 
@@ -15,7 +16,12 @@ public class Main {
         } catch (Exception ignore) {
         }
 
-        R.settings.set(R.settings.WORKSPACE, "F:\\Programmieren\\JAVA\\ToyIDE\\testfiles\\");
+        {
+            File settingsFile = new File("settings.json");
+            if(settingsFile.exists() && !settingsFile.isDirectory())
+                R.settings.loadSettings();
+        }
+        //R.settings.set(R.settings.WORKSPACE, "F:\\Programmieren\\JAVA\\ToyIDE\\testfiles\\");
 
         ToyIdeWindow wnd = new ToyIdeWindow();
         Log.setConsole(wnd.getConsole());
