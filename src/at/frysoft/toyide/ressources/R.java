@@ -105,6 +105,20 @@ public class R {
             }
 
         } // strings.file
+
+        public static class config {
+
+            public static final String NAME = "Name";
+            public static final String BIT_WIDTH = "BitWidth";
+            public static final String MEMORY_SIZE = "MemorySize";
+            public static final String PC_START = "PcStart";
+            public static final String CPU = "Cpu";
+            public static final String REGISTER_COUNT = "RegisterCount";
+            public static final String INSTRUCTION = "Instruction";
+            public static final String INSTRUCTION_SET = "InstructionSet";
+            public static final String ACTION = "Action";
+
+        } // strings.config
         
     } // strings
     

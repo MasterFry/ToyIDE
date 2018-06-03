@@ -19,12 +19,18 @@ public abstract class CPU {
 
     private Vector<CpuListener> cpuListeners;
 
-    public CPU() {
-        memory = new Memory(0x100);
-        memory.lockAddress(0xFF);
+    public CPU(Memory register, Memory memory) {
+        if(register == null) {
+            this.register = new Memory(0x10);
+            this.register.lockAddress(0x0);
+        }else
+            this.register = register;
 
-        register = new Memory(0x10);
-        register.lockAddress(0x0);
+        if(register == null) {
+            this.register = new Memory(0x100);
+            this.register.lockAddress(0xFF);
+        }else
+            this.register = memory;
 
         pc = new PC(0x10);
 

@@ -42,6 +42,10 @@ public class Instruction {
         this.instruction = instruction;
     }
 
+    public int get(int mask) {
+        return (instruction & mask);
+    }
+
     public int get() {
         return instruction;
     }

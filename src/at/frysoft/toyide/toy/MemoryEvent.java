@@ -11,12 +11,12 @@ public class MemoryEvent {
 
     private final int address;
 
-    private final short oldValue;
-    private final short value;
+    private final int oldValue;
+    private final int value;
 
     private final Memory memory;
 
-    public MemoryEvent(int address, short oldValue, short value, Memory memory) {
+    public MemoryEvent(int address, int oldValue, int value, Memory memory) {
         this.address = address;
         this.oldValue = oldValue;
         this.value = value;
@@ -24,18 +24,18 @@ public class MemoryEvent {
     }
 
     public MemoryEvent(Memory memory) {
-        this((-1), (short)(-1), (short)(-1), memory);
+        this(0, 0, 0, memory);
     }
 
     public int getAddress() {
         return address;
     }
 
-    public short getOldValue() {
+    public int getOldValue() {
         return oldValue;
     }
 
-    public short getValue() {
+    public int getValue() {
         return value;
     }
 
