@@ -56,6 +56,7 @@ public class TextEditorDocument extends DefaultStyledDocument implements CaretLi
     @Override
     public void remove(int offset, int length) throws BadLocationException {
         super.remove(offset, length);
+        // TODO check for highlight
     }
 
     @Override

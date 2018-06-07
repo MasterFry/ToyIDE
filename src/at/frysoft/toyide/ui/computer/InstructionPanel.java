@@ -1,9 +1,9 @@
-package at.frysoft.toyide.ui.cpu;
+package at.frysoft.toyide.ui.computer;
 
 import at.frysoft.toyide.ressources.R;
-import at.frysoft.toyide.toy.CPU;
-import at.frysoft.toyide.toy.CpuEvent;
-import at.frysoft.toyide.toy.CpuListener;
+import at.frysoft.toyide.computer.cpu.CPU;
+import at.frysoft.toyide.computer.cpu.CpuEvent;
+import at.frysoft.toyide.computer.cpu.CpuListener;
 
 import javax.swing.*;
 import java.awt.*;

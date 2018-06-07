@@ -40,7 +40,7 @@ public class Utils {
             Log.err.println(R.strings.file.NOT_ASM_FILE);
             return null;
         }
-        return asmFileName.substring(0, asmFileName.length() - 4) + ".toy";
+        return asmFileName.substring(0, asmFileName.length() - 4) + ".computer";
     }
 
 }

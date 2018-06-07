@@ -1,12 +1,15 @@
-package at.frysoft.toyide.toy;
+package at.frysoft.toyide.computer.cpu;
+
+import at.frysoft.toyide.computer.Bus;
+import at.frysoft.toyide.computer.memory.Memory;
 
 public class SToy extends Toy {
 
     public static final int SP = 0xF;
     public static final int BP = 0xE;
 
-    public SToy() {
-        super();
+    public SToy(Memory register, Bus bus, int pcStart) {
+        super(register, bus, pcStart);
     }
 
     @Override
@@ -20,23 +23,22 @@ public class SToy extends Toy {
 
             case Instruction.PUSH:
                 register.write(SP, register.read(SP) - 1);
-                memory.write(register.read(SP), register.read(instr.getRt()));
+                bus.write(register.read(SP), register.read(instr.getRt()));
                 return;
 
             case Instruction.POP:
-                register.write(instr.getRt(), memory.read(register.read(SP)));
+                register.write(instr.getRt(), bus.read(register.read(SP)));
                 register.write(SP, register.read(SP) + 1);
                 return;
 
             case Instruction.CALL:
                 register.write(SP, register.read(SP) - 1);
-                register.write(BP, register.read(SP));
-                memory.write(register.read(SP), pc.get());
+                bus.write(register.read(SP), pc.get());
                 pc.set(instr.getImm());
                 return;
 
             case Instruction.RET:
-                pc.set(memory.read(register.read(SP)));
+                pc.set(bus.read(register.read(SP)));
                 register.write(SP, register.read(SP) + 1);
                 return;
 

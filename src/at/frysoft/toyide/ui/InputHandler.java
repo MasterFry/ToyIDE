@@ -52,6 +52,12 @@ public class InputHandler implements ActionListener {
                 start();
                 break;
 
+            case ToolBar.C_A_S:
+                saveFile();
+                compile();
+                start();
+                break;
+
             case ToolBar.STEP:
                 step();
                 break;
@@ -66,6 +72,10 @@ public class InputHandler implements ActionListener {
                     start();
                     run();
                 }
+                break;
+
+            case ToolBar.STOP:
+                stop();
                 break;
 
             case ToolBar.SETTINGS:
@@ -141,25 +151,29 @@ public class InputHandler implements ActionListener {
 
     // -----------------------------------------------------------------------------------------------------------------
     private void start() {
-        toyIdeWindow.getCpu().reset();
+        toyIdeWindow.getComputer().reset();
 
         String dst = Utils.fileNameAsmToToy(toyIdeWindow.getTextEditor().getCurrentFile().getAbsolutePath());
         if(dst == null)
             return;
 
-        toyIdeWindow.getCpu().load(dst);
-        toyIdeWindow.getCpu().start();
+        toyIdeWindow.getComputer().getBus().getMainMemory().load(new File(dst));
+        toyIdeWindow.getComputer().getCpu().start();
     }
 
     // -----------------------------------------------------------------------------------------------------------------
     private void step() {
-        toyIdeWindow.getCpu().step();
+        toyIdeWindow.getComputer().getCpu().step();
     }
 
     // -----------------------------------------------------------------------------------------------------------------
     private void run() {
-        toyIdeWindow.getCpu().run();
+        (new Thread(() -> toyIdeWindow.getComputer().getCpu().run())).start();
         Log.out.println("Toy Has finished executing.");
+    }
+
+    private void stop() {
+        toyIdeWindow.getComputer().getCpu().stop();
     }
 
 }

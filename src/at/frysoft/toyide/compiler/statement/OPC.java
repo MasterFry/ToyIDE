@@ -1,7 +1,7 @@
 package at.frysoft.toyide.compiler.statement;
 
+import at.frysoft.toyide.computer.cpu.Instruction;
 import at.frysoft.toyide.ressources.R;
-import at.frysoft.toyide.toy.Instruction;
 
 /**
  * Created on : 26.05.2018

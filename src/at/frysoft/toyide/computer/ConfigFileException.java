@@ -1,4 +1,4 @@
-package at.frysoft.toyide.toy;
+package at.frysoft.toyide.computer;
 
 /**
  * Created on : 01.06.2018

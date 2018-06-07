@@ -1,4 +1,4 @@
-package at.frysoft.toyide.toy;
+package at.frysoft.toyide.computer.memory;
 
 import at.frysoft.toyide.Log;
 import at.frysoft.toyide.ressources.R;
@@ -9,23 +9,20 @@ import java.util.Vector;
 public class Memory {
 
     private int bitMask;
-
     private int data[];
-
-    private Vector<Integer> lockedAddresses;
-
     private Vector<MemoryListener> memoryListeners;
 
     public Memory(int bitWidth, int size) {
         bitMask = (int)Math.pow(2, bitWidth) - 1;
         data = new int[size];
-        lockedAddresses = new Vector<>();
         memoryListeners = new Vector<>();
     }
 
-    public void lockAddress(int addr) {
-        if(!lockedAddresses.contains(addr))
-            lockedAddresses.add(addr);
+    public int peek(int addr) {
+        if(addr >= this.data.length || addr < 0)
+            throw new IllegalArgumentException("Memory Address out of Bounds: " + addr);
+
+        return data[addr];
     }
 
     public int read(int addr) {
@@ -38,9 +35,6 @@ public class Memory {
     public void write(int addr, int data) {
         if(addr >= this.data.length || addr < 0)
             throw new IllegalArgumentException("Memory Address out of Bounds: " + addr);
-
-        if(lockedAddresses.contains(addr))
-            return;
 
         int oldData = this.data[addr];
         data &= bitMask;
@@ -89,9 +83,9 @@ public class Memory {
 
             while((line = br.readLine()) != null) {
                 r = line.split(": ");
-                data[Integer.parseInt(r[0], 16)] = (short)Integer.parseInt(r[1], 16);
+                data[Integer.parseInt(r[0], 16)] = Integer.parseInt(r[1], 16);
             }
-            Log.out.println("Done reading .toy File.");
+            Log.out.println("Done reading .computer File.");
 
             br.close();
 

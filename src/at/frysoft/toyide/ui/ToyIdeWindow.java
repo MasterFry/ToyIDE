@@ -1,8 +1,9 @@
 package at.frysoft.toyide.ui;
 
-import at.frysoft.toyide.toy.CPU;
-import at.frysoft.toyide.toy.SToy;
-import at.frysoft.toyide.ui.cpu.CpuPanel;
+import at.frysoft.toyide.computer.Computer;
+import at.frysoft.toyide.computer.cpu.CPU;
+import at.frysoft.toyide.computer.cpu.Toy;
+import at.frysoft.toyide.ui.computer.ComputerPanel;
 import at.frysoft.toyide.ui.texteditor.TextEditor;
 
 import javax.swing.*;
@@ -13,11 +14,11 @@ import java.awt.*;
  */
 public class ToyIdeWindow extends JFrame {
 
-    private CPU cpu;
+    private Computer computer;
 
     private Console console;
     private TextEditor textEditor;
-    private CpuPanel cpuPanel;
+    private ComputerPanel computerPanel;
 
     private InputHandler inputHandler;
 
@@ -25,10 +26,10 @@ public class ToyIdeWindow extends JFrame {
         super("Toy IDE");
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 
-        int width = 1600;
-        int height = 900;
+        int width = 1024;
+        int height = 576;
 
-        cpu = new SToy();
+        computer = new Computer(Computer.CPU_STOY);
 
         inputHandler = new InputHandler(this);
         ToolBar toolBar = new ToolBar(inputHandler);
@@ -36,9 +37,9 @@ public class ToyIdeWindow extends JFrame {
 
         textEditor = new TextEditor();
         console = new Console();
-        cpuPanel = new CpuPanel(cpu);
+        computerPanel = new ComputerPanel(computer);
 
-        JScrollPane cpuPane = new JScrollPane(cpuPanel, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        JScrollPane cpuPane = new JScrollPane(computerPanel, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
         cpuPane.getVerticalScrollBar().setUnitIncrement(16);
 
         JSplitPane sp1 = new JSplitPane(JSplitPane.VERTICAL_SPLIT, new JScrollPane(textEditor), new JScrollPane(console));
@@ -69,8 +70,8 @@ public class ToyIdeWindow extends JFrame {
         return textEditor;
     }
 
-    public CPU getCpu() {
-        return cpu;
+    public Computer getComputer() {
+        return computer;
     }
 
 }

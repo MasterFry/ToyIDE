@@ -1,4 +1,4 @@
-package at.frysoft.toyide.toy;
+package at.frysoft.toyide.computer.cpu;
 
 import at.frysoft.toyide.ressources.R;
 

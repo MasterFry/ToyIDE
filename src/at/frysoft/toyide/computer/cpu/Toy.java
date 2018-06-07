@@ -1,9 +1,12 @@
-package at.frysoft.toyide.toy;
+package at.frysoft.toyide.computer.cpu;
+
+import at.frysoft.toyide.computer.Bus;
+import at.frysoft.toyide.computer.memory.Memory;
 
 public class Toy extends CPU {
 
-    public Toy() {
-        super();
+    public Toy(Memory register, Bus bus, int pcStart) {
+        super(register, bus, pcStart);
     }
 
     @Override
@@ -42,19 +45,19 @@ public class Toy extends CPU {
                 return;
 
             case Instruction.LD:
-                register.write(instr.getRd(), memory.read(instr.getImm()));
+                register.write(instr.getRd(), bus.read(instr.getImm()));
                 return;
 
             case Instruction.ST:
-                memory.write(instr.getImm(), register.read(instr.getRd()));
+                bus.write(instr.getImm(), register.read(instr.getRd()));
                 return;
 
             case Instruction.LDI:
-                register.write(instr.getRd(), memory.read(instr.getRs() + register.read(instr.getRt())));
+                register.write(instr.getRd(), bus.read(instr.getRs() + register.read(instr.getRt())));
                 return;
 
             case Instruction.STI:
-                memory.write(instr.getRs() + register.read(instr.getRt()), register.read(instr.getRd()));
+                bus.write(instr.getRs() + register.read(instr.getRt()), register.read(instr.getRd()));
                 return;
 
             case Instruction.BZ:

@@ -1,4 +1,4 @@
-package at.frysoft.toyide.toy;
+package at.frysoft.toyide.computer.memory;
 
 /**
  * Created on : 31.05.2018

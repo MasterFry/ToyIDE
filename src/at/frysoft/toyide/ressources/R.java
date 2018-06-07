@@ -51,9 +51,9 @@ public class R {
                 public static final String CALL = "CALL";
                 public static final String RET  = "RET";
 
-            } // strings.toy.instruction
+            } // strings.computer.instruction
 
-        } // strings.toy
+        } // strings.computer
         
         public static class compiler {
 

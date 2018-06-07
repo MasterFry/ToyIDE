@@ -1,9 +1,9 @@
-package at.frysoft.toyide.ui.cpu;
+package at.frysoft.toyide.ui.computer;
 
-import at.frysoft.toyide.toy.CPU;
-import at.frysoft.toyide.toy.CpuEvent;
-import at.frysoft.toyide.toy.CpuListener;
-import at.frysoft.toyide.toy.Memory;
+import at.frysoft.toyide.computer.Computer;
+import at.frysoft.toyide.computer.cpu.CPU;
+import at.frysoft.toyide.computer.cpu.CpuEvent;
+import at.frysoft.toyide.computer.cpu.CpuListener;
 
 import javax.swing.*;
 import javax.swing.border.LineBorder;
@@ -19,14 +19,15 @@ import java.awt.event.ComponentListener;
  * Contributors:
  * Stefan
  */
-public class CpuPanel extends JPanel implements ComponentListener, CpuListener {
+public class ComputerPanel extends JPanel implements ComponentListener, CpuListener {
 
     private InstructionPanel instructionPanel;
     private MemoryPanel registerPanel;
     private MemoryPanel memoryPanel;
+    private InputPanel inputPanel;
 
-    public CpuPanel(CPU cpu) {
-        cpu.addCpuListener(this);
+    public ComputerPanel(Computer computer) {
+        computer.getCpu().addCpuListener(this);
 
         setLayout(new GridBagLayout());
         addComponentListener(this);
@@ -41,19 +42,24 @@ public class CpuPanel extends JPanel implements ComponentListener, CpuListener {
         gbc.gridx = 0;
 
         gbc.gridy = 0;
-        instructionPanel = new InstructionPanel(cpu);
+        instructionPanel = new InstructionPanel(computer.getCpu());
         instructionPanel.setBorder(new TitledBorder(border, "Instruction"));
         add(instructionPanel, gbc);
 
         gbc.gridy = 1;
-        registerPanel = new MemoryPanel(cpu.getRegister());
+        registerPanel = new MemoryPanel(computer.getCpu().getRegister());
         registerPanel.setBorder(new TitledBorder(border, "Register"));
         add(registerPanel, gbc);
 
         gbc.gridy = 2;
-        memoryPanel = new MemoryPanel(cpu.getMemory());
+        memoryPanel = new MemoryPanel(computer.getBus().getMainMemory());
         memoryPanel.setBorder(new TitledBorder(border, "Memory"));
         add(memoryPanel, gbc);
+
+        gbc.gridy = 3;
+        inputPanel = new InputPanel(computer.getBus().getInput());
+        inputPanel.setBorder(new TitledBorder(border, "Input"));
+        add(inputPanel, gbc);
 
         setVisible(true);
     }
@@ -62,6 +68,7 @@ public class CpuPanel extends JPanel implements ComponentListener, CpuListener {
     public void componentResized(ComponentEvent e) {
         registerPanel.componentResized();
         memoryPanel.componentResized();
+        inputPanel.componentResized();
     }
 
     @Override

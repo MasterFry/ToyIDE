@@ -1,10 +1,9 @@
-package at.frysoft.toyide.ui.cpu;
+package at.frysoft.toyide.ui.computer;
 
 import at.frysoft.toyide.ressources.R;
-import at.frysoft.toyide.ressources.settings.Settings;
-import at.frysoft.toyide.toy.Memory;
-import at.frysoft.toyide.toy.MemoryEvent;
-import at.frysoft.toyide.toy.MemoryListener;
+import at.frysoft.toyide.computer.memory.Memory;
+import at.frysoft.toyide.computer.memory.MemoryEvent;
+import at.frysoft.toyide.computer.memory.MemoryListener;
 
 import javax.swing.*;
 import javax.swing.border.LineBorder;
@@ -133,7 +132,7 @@ public class MemoryPanel extends JPanel implements MemoryListener {
     @Override
     public void onMemoryImageLoaded(MemoryEvent e) {
         for(int i = 0; i < dataValues.length; ++i) {
-            dataValues[i].setText(String.format("%04X", e.getMemory().read(i)));
+            dataValues[i].setText(String.format("%04X", e.getMemory().peek(i)));
         }
     }
 

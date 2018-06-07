@@ -1,4 +1,4 @@
-package at.frysoft.toyide.toy;
+package at.frysoft.toyide.computer.cpu;
 
 /**
  * Created by Stefan on 20.05.2018.
